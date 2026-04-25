@@ -16,12 +16,11 @@
 <body class="bg-slate-200 font-sans text-gray-900">
 
     <!-- NAV -->
-
     <nav class="fixed top-0 left-0 right-0 z-[1000] bg-white backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-5 h-[54px]">
         <!-- Logo -->
         <div class="flex items-center gap-2">
             <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-8 w-auto object-contain flex-shrink-0">
-            <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Warga</span></span>
+            <span class="font-extrabold text-xl tracking-tight">Air<span class="text-teal-200">Warga</span></span>
         </div>
 
         <!-- Center badges -->
@@ -37,9 +36,10 @@
             <button
                 class="border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-gray-50 transition-colors"
                 onclick="togglePanel()">📋 Laporan &amp; Info</button>
-            <button
-                class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors"
-                onclick="openLapor()">+ Lapor Sekarang</button>
+            <a href="{{ route('reports.create') }}"
+                class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors">
+                + Lapor Sekarang
+            </a>
         </div>
     </nav>
 
@@ -168,121 +168,69 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script>
-        var mapObj, selCatEl = null, panelOpen = false;
+        <script>
+            var mapObj, selCatEl = null, panelOpen = false;
 
-    var mapObj, selCatEl = null, panelOpen = false;
+            function togglePanel() {
+                panelOpen = !panelOpen;
+                document.getElementById('panelBody').classList.toggle('open', panelOpen);
+                document.getElementById('chevron').classList.toggle('open', panelOpen);
+            }
 
-function togglePanel() {
-    panelOpen = !panelOpen;
-    document.getElementById('panelBody').classList.toggle('open', panelOpen);
-    document.getElementById('chevron').classList.toggle('open', panelOpen);
-}
-function togglePanel() {
-    panelOpen = !panelOpen;
-    document.getElementById('panelBody').classList.toggle('open', panelOpen);
-    document.getElementById('chevron').classList.toggle('open', panelOpen);
-}
+            function openLapor() {
+                
+                
+            }
 
-function openLapor() {
-    if (!panelOpen) togglePanel();
-    switchTabById('lapor');
-}
-function openLapor() {
-    if (!panelOpen) togglePanel();
-    switchTabById('lapor');
-}
+            function switchTab(id, btn) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
+                btn.classList.add('active');
+                var el = document.getElementById('sub-' + id);
+                el.classList.remove('hidden');
+                el.classList.add('active');
+            }
 
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    btn.classList.add('active');
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    btn.classList.add('active');
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
+            function switchTabById(id) {
+                var tabs = document.querySelectorAll('.tab');
+                tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
+                document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
+                var el = document.getElementById('sub-' + id);
+                el.classList.remove('hidden');
+                el.classList.add('active');
+            }
 
-function switchTabById(id) {
-    var tabs = document.querySelectorAll('.tab');
-    tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
-function switchTabById(id) {
-    var tabs = document.querySelectorAll('.tab');
-    tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
+            function selCat(el) {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                el.classList.add('active');
+                selCatEl = el;
+            }
 
-function selCat(el) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    selCatEl = el;
-}
-function selCat(el) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    selCatEl = el;
-}
+            function toast(msg) {
+                var t = document.getElementById('toast');
+                document.getElementById('toast-msg').textContent = msg;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 4000);
+            }
 
-function toast(msg) {
-    var t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-}
-function toast(msg) {
-    var t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-}
+            function doFilter() {
+                // U can do filter logic here
+                var kel = document.getElementById('kel').value;
+                if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
+                if (!kel) { toast('Pilih kelurahan Anda.'); return; }
+                toast('Filter berhasil!');
+            }
 
-function doFilter() {
-    // U can do filter logic here
-    var kel = document.getElementById('kel').value;
-    if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
-    if (!kel) { toast('Pilih kelurahan Anda.'); return; }
-    toast('Filter berhasil!');
-}
-function doSubmit() {
-    var kel = document.getElementById('kel').value;
-    if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
-    if (!kel) { toast('Pilih kelurahan Anda.'); return; }
-    toast('Laporan diterima! Jika ada 2 laporan lain di area kamu, kami akan mengeluarkan peringatan.');
-}
+            function flyAndClose(coords) {
+                // Tutup panel
+                panelOpen = false;
+                document.getElementById('panelBody').classList.remove('open');
+                document.getElementById('chevron').classList.remove('open');
 
-function flyAndClose(coords) {
-    // Tutup panel
-    panelOpen = false;
-    document.getElementById('panelBody').classList.remove('open');
-    document.getElementById('chevron').classList.remove('open');
-
-    // Zoom ke lokasi
-    mapObj.flyTo(coords, 16, { duration: 1.4 });
-}
-function fly(coords) {
-    mapObj.flyTo(coords, 14, { duration: 1.2 });
-}
-
-// function fly(coords) {
-//     mapObj.flyTo(coords, 14, { duration: 1.2 });
-// }
-
-    </script>
+                // Zoom ke lokasi
+                mapObj.flyTo(coords, 16, { duration: 1.4 });
+            }
+        </script>
     </script>
 </body>
 
