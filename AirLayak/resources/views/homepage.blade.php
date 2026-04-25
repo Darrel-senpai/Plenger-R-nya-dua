@@ -46,209 +46,102 @@
     <!-- FULLSCREEN MAP -->
     <div id="map"></div>
 
-    <!-- FLOATING PANEL -->
     <div class="float-panel fixed left-1/2 -translate-x-1/2 z-[500] w-[min(680px,calc(100vw-32px))] bg-white/97 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-2xl overflow-hidden" style="top: calc(54px + 14px)">
 
-    <!-- Header (always visible) -->
     <div id="panelHeader" class="flex items-center justify-between px-4 py-3 cursor-pointer select-none border-b border-transparent hover:bg-gray-50/50 transition-colors" onclick="togglePanel()">
         <div class="flex items-center gap-2.5">
-        <div class="w-2 h-2 rounded-full bg-danger-DEFAULT flex-shrink-0 animate-blink-slow" style="background:#DC2626"></div>
-        <div>
-            <div id="panel-headline" class="text-[13px] font-bold"></div>
-            <div id="panel-subline" class="text-[11px] text-gray-500 mt-0.5"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-danger-DEFAULT flex-shrink-0 animate-blink-slow" style="background:#DC2626"></div>
+            <div>
+                <div id="panel-headline" class="text-[13px] font-bold">Memuat data...</div>
+                <div id="panel-subline" class="text-[11px] text-gray-500 mt-0.5">Menganalisis laporan wilayah Surabaya</div>
+            </div>
         </div>
-        </div>
+
         <div class="flex items-center gap-4">
-        <!-- Stats -->
-        <div class="flex items-center gap-3">
-            <div class="text-center">
-            <div id="stat-total" class="text-[15px] font-extrabold font-mono text-danger" style="color:#DC2626"></div>
-            <div class="text-[9px] text-gray-500 whitespace-nowrap">Laporan</div>
+            <div class="flex items-center gap-3">
+                <div class="text-center">
+                    <div id="stat-total" class="text-[15px] font-extrabold font-mono text-danger" style="color:#DC2626">0</div>
+                    <div class="text-[9px] text-gray-500 whitespace-nowrap">Laporan</div>
+                </div>
+                <div class="w-px h-7 bg-gray-200"></div>
+                <div class="text-center">
+                    <div id="stat-cluster" class="text-[15px] font-extrabold font-mono" style="color:#D97706">0</div>
+                    <div class="text-[9px] text-gray-500">Cluster</div>
+                </div>
+                <div class="w-px h-7 bg-gray-200"></div>
+                <div class="text-center">
+                    <div id="stat-kel" class="text-[15px] font-extrabold font-mono" style="color:#0D8C6E">0</div>
+                    <div class="text-[9px] text-gray-500">Kelurahan</div>
+                </div>
             </div>
-            <div class="w-px h-7 bg-gray-200"></div>
-            <div class="text-center">
-            <div id="stat-cluster" class="text-[15px] font-extrabold font-mono" style="color:#D97706"></div>
-            <div class="text-[9px] text-gray-500">Cluster</div>
-            </div>
-            <div class="w-px h-7 bg-gray-200"></div>
-            <div class="text-center">
-            <div id="stat-kel" class="text-[15px] font-extrabold font-mono" style="color:#0D8C6E"></div>
-            <div class="text-[9px] text-gray-500">Kelurahan</div>
-            </div>
-        </div>
-        <span class="chevron text-xs text-gray-500 ml-2" id="chevron">▼</span>
+            <span class="chevron text-xs text-gray-500 ml-2" id="chevron">▼</span>
         </div>
     </div>
 
-    <!-- Collapsible body -->
     <div class="panel-body" id="panelBody">
-        <div class="p-4 flex flex-col gap-3">
+        <div class="p-4 flex flex-col gap-4">
 
-        <!-- Alert -->
-        <div class="bg-red-50 border border-red-500 rounded-xl p-3 flex gap-2.5 items-start" style="border-color:#DC2626;background:#FEE2E2">
-            <span class="text-base flex-shrink-0 mt-0.5">🚨</span>
-            <p id="alert-text" class="text-xs leading-relaxed" style="color:#7F1D1D"></p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
-            <button class="tab active flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('lapor',this)">Filter</button>
-            <button class="tab flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('area',this)">Cek Area Saya</button>
-        </div>
-
-        <!-- REPORT FORM -->
-        <div class="subpanel active" id="sub-lapor">
-            <!-- Category grid -->
-            <div class="grid grid-cols-4 gap-1.5 mb-2.5 max-[500px]:grid-cols-2">
-            <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full" onclick="selCat(this)">
-                <span class="text-lg">💧</span><span class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Bau Menyengat</span>
-            </button>
-            <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full" onclick="selCat(this)">
-                <span class="text-lg">🟡</span><span class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Air Berubah Warna</span>
-            </button>
-            <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full" onclick="selCat(this)">
-                <span class="text-lg">🤢</span><span class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Sakit / Diare</span>
-            </button>
-            <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full" onclick="selCat(this)">
-                <span class="text-lg">❓</span><span class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Lainnya</span>
-            </button>
+            <div id="alert-container" class="bg-red-50 border border-red-500 rounded-xl p-3 flex gap-2.5 items-start" style="border-color:#DC2626; background:#FEE2E2">
+                <span class="text-base flex-shrink-0 mt-0.5">🚨</span>
+                <p id="alert-text" class="text-xs leading-relaxed" style="color:#7F1D1D">
+                    Memproses laporan darurat wilayah...
+                </p>
             </div>
-            <!-- Form row -->
-            <div class="flex gap-2">
-            <select id="kel" class="flex-1 px-3 py-2 border-[1.5px] border-gray-200 rounded-lg font-sans text-xs text-gray-900 bg-white cursor-pointer focus:outline-none focus:border-blue transition-colors pr-8">
-                <option value="">Pilih Kelurahan...</option>
-                <option>Semampir</option>
-                <option>Tambaksari</option>
-                <option>Kenjeran</option>
-                <option>Bubutan</option>
-                <option>Wonokromo</option>
-                <option>Tenggilis Mejoyo</option>
-                <option>Mulyorejo</option>
-                <option>Rungkut</option>
-            </select>
-            <button class="px-5 py-2 bg-blue text-white rounded-lg font-sans text-xs font-bold whitespace-nowrap hover:bg-blue-dark transition-colors" onclick="doFilter()">Search</button>
+
+            <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
+                <button class="tab active flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all" onclick="switchTab('lapor',this)">
+                    📋 Laporkan / Filter
+                </button>
+                <button class="tab flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all" onclick="switchTab('area',this)">
+                    🗺 Cek Area Saya
+                </button>
             </div>
-        </div>
 
-        {{-- <!-- AREA LIST -->
-        <div class="subpanel hidden" id="sub-area">
-            <div class="area-scroll flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-
-            <!-- Red areas -->
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2.5 cursor-pointer hover:border-blue hover:bg-blue-light transition-all" onclick="fly([-7.223,112.748])">
-                <div class="w-2 h-2 rounded-full flex-shrink-0" style="background:#EF4444"></div>
-                <div class="flex-1">
-                <div class="text-xs font-bold">Semampir</div>
-                <div class="text-[10px] text-gray-500 mt-0.5">3× bau menyengat, 2× air keruh</div>
+            <div class="subpanel active" id="sub-lapor">
+                <div class="grid grid-cols-4 gap-2 mb-3 max-[500px]:grid-cols-2">
+                    <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-3 px-1.5 flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all" onclick="selCat(this)">
+                        <span class="text-lg">💧</span>
+                        <span class="text-[10px] font-bold text-gray-500 text-center leading-tight">Bau Menyengat</span>
+                    </button>
+                    <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-3 px-1.5 flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all" onclick="selCat(this)">
+                        <span class="text-lg">🟡</span>
+                        <span class="text-[10px] font-bold text-gray-500 text-center leading-tight">Air Berwarna</span>
+                    </button>
+                    <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-3 px-1.5 flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all" onclick="selCat(this)">
+                        <span class="text-lg">🤢</span>
+                        <span class="text-[10px] font-bold text-gray-500 text-center leading-tight">Sakit / Diare</span>
+                    </button>
+                    <button class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-3 px-1.5 flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all" onclick="selCat(this)">
+                        <span class="text-lg">❓</span>
+                        <span class="text-[10px] font-bold text-gray-500 text-center leading-tight">Lainnya</span>
+                    </button>
+                </div>
+                
+                <div class="flex gap-2">
+                    <select id="kel" class="flex-1 px-3 py-2.5 border-[1.5px] border-gray-200 rounded-xl font-sans text-xs text-gray-900 bg-white focus:border-blue focus:ring-2 focus:ring-blue/20 transition-all outline-none">
+                        <option value="">Pilih Kelurahan Anda...</option>
+                        <option>Ampel</option>
+                        <option>Sidotopo</option>
+                        <option>Putat Jaya</option>
+                        <option>Gading</option>
+                    </select>
+                    <button class="px-6 py-2.5 bg-blue text-white rounded-xl text-xs font-bold hover:bg-blue-dark transition-all shadow-md shadow-blue/20" onclick="doSubmit()">
+                        Kirim →
+                    </button>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <!-- Stats -->
-                <div class="flex items-center gap-3">
-                    <div class="text-center">
-                        <div id="stat-total" class="text-[15px] font-extrabold font-mono text-danger"
-                            style="color:#DC2626"></div>
-                        <div class="text-[9px] text-gray-500 whitespace-nowrap">Laporan</div>
-                    </div>
-                    <div class="w-px h-7 bg-gray-200"></div>
-                    <div class="text-center">
-                        <div id="stat-cluster" class="text-[15px] font-extrabold font-mono" style="color:#D97706"></div>
-                        <div class="text-[9px] text-gray-500">Cluster</div>
-                    </div>
-                    <div class="w-px h-7 bg-gray-200"></div>
-                    <div class="text-center">
-                        <div id="stat-kel" class="text-[15px] font-extrabold font-mono" style="color:#0D8C6E"></div>
-                        <div class="text-[9px] text-gray-500">Kelurahan</div>
-                    </div>
-                </div>
-                <span class="chevron text-xs text-gray-500 ml-2" id="chevron">▼</span>
-            </div>
-        </div>
 
-        <!-- Collapsible body -->
-        <div class="panel-body" id="panelBody">
-            <div class="p-4 flex flex-col gap-3">
-
-                <!-- Alert -->
-                <div class="bg-red-50 border border-red-500 rounded-xl p-3 flex gap-2.5 items-start"
-                    style="border-color:#DC2626;background:#FEE2E2">
-                    <span class="text-base flex-shrink-0 mt-0.5">🚨</span>
-                    <p id="alert-text" class="text-xs leading-relaxed" style="color:#7F1D1D"></p>
-                </div>
-
-                <!-- Tabs -->
-                <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
-                    <button
-                        class="tab active flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all"
-                        onclick="switchTab('lapor',this)">📋 Laporkan Masalah</button>
-                    <button
-                        class="tab flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all"
-                        onclick="switchTab('area',this)">🗺 Cek Area Saya</button>
-                </div>
-
-                <!-- REPORT FORM -->
-                <div class="subpanel active" id="sub-lapor">
-                    <!-- Category grid -->
-                    <div class="grid grid-cols-4 gap-1.5 mb-2.5 max-[500px]:grid-cols-2">
-                        <button
-                            class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full"
-                            onclick="selCat(this)">
-                            <span class="text-lg">💧</span><span
-                                class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Bau
-                                Menyengat</span>
-                        </button>
-                        <button
-                            class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full"
-                            onclick="selCat(this)">
-                            <span class="text-lg">🟡</span><span
-                                class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Air Berubah
-                                Warna</span>
-                        </button>
-                        <button
-                            class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full"
-                            onclick="selCat(this)">
-                            <span class="text-lg">🤢</span><span
-                                class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Sakit /
-                                Diare</span>
-                        </button>
-                        <button
-                            class="cat-btn bg-gray-50 border-[1.5px] border-gray-200 rounded-xl py-2.5 px-1.5 cursor-pointer flex flex-col items-center gap-1 hover:border-blue hover:bg-blue-light transition-all w-full"
-                            onclick="selCat(this)">
-                            <span class="text-lg">❓</span><span
-                                class="text-[10px] font-semibold text-gray-500 text-center leading-tight">Lainnya</span>
-                        </button>
-                    </div>
-                    <!-- Form row -->
-                    <div class="flex gap-2">
-                        <select id="kel"
-                            class="flex-1 px-3 py-2 border-[1.5px] border-gray-200 rounded-lg font-sans text-xs text-gray-900 bg-white cursor-pointer focus:outline-none focus:border-blue transition-colors pr-8">
-                            <option value="">Pilih Kelurahan...</option>
-                            <option>Semampir</option>
-                            <option>Tambaksari</option>
-                            <option>Kenjeran</option>
-                            <option>Bubutan</option>
-                            <option>Wonokromo</option>
-                            <option>Tenggilis Mejoyo</option>
-                            <option>Mulyorejo</option>
-                            <option>Rungkut</option>
-                        </select>
-                        <button
-                            class="px-5 py-2 bg-blue text-white rounded-lg font-sans text-xs font-bold whitespace-nowrap hover:bg-blue-dark transition-colors"
-                            onclick="doSubmit()">Kirim Anonim →</button>
-                    </div>
-                </div>
-
-                <!-- AREA LIST -->
-                <div class="subpanel hidden" id="sub-area">
-                    <div class="area-scroll flex flex-col gap-1.5 max-h-48 overflow-y-auto" id="area-list">
-                        <!-- Diisi otomatis oleh JS -->
+            <div class="subpanel hidden" id="sub-area">
+                <div id="area-list" class="area-scroll flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                    <div class="py-10 text-center text-gray-400 text-xs italic">
+                        Memuat daftar wilayah...
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
-
+</div>
 
 
     <!-- LEGEND BOTTOM RIGHT -->
