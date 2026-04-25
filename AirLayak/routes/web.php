@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\GuestAuthController;
+use App\Http\Controllers\HomepageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
+
+Route::get('/homepage', [HomepageController::class, 'homepage']);
