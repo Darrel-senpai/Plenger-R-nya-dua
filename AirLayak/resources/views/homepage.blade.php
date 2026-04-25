@@ -40,6 +40,7 @@
             <button
                 class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors"
                 onclick="openLapor()">+ Lapor Sekarang</button>
+            <a href="{{ route('email') }}">Kirim email</a>
         </div>
     </nav>
 

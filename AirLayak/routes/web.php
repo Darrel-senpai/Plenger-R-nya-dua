@@ -4,6 +4,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\GuestAuthController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\FormReportController;
+use App\Http\Controllers\warnPDAM;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,4 @@ Route::get('/homepage', [HomepageController::class, 'homepage'])->name('homepage
 Route::get('/lapor', [FormReportController::class, 'create'])->name('reports.create');
 Route::post('/lapor', [FormReportController::class, 'store'])->name('reports.store');
 
-// Route::post('/')
+Route::get('/email', [warnPDAM::class, 'warnTechnician'])->name('email');
