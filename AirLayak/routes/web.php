@@ -3,6 +3,7 @@
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\GuestAuthController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\FormReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
 
-Route::get('/homepage', [HomepageController::class, 'homepage']);
+Route::get('/homepage', [HomepageController::class, 'homepage'])->name('homepage');
+Route::get('/lapor', [FormReportController::class, 'create'])->name('reports.create');
+Route::post('/lapor', [FormReportController::class, 'store'])->name('reports.store');
+
+// Route::post('/')
