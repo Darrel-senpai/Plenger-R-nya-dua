@@ -48,6 +48,8 @@ class User extends Authenticatable
         'default_lng' => 'float',
     ];
 
+    
+
     // Auto-generate UUID untuk new records
     protected static function boot()
     {
@@ -55,7 +57,7 @@ class User extends Authenticatable
 
         static::creating(function ($model) {
             if (empty($model->id)) {
-                $model->id = (string) Str::uuid();
+                $model->id = (string) \Illuminate\Support\Str::uuid();
             }
         });
     }
@@ -83,6 +85,24 @@ class User extends Authenticatable
     }
 
     // === HELPERS ===
+
+     public const INSTANSI_ROLES = ['admin', 'pdam', 'dinkes'];
+
+    public function isInstansi(): bool
+    {
+        return in_array($this->role, self::INSTANSI_ROLES, true);
+    }
+
+    public function isWarga(): bool
+    {
+        // Warga biasa: tidak punya role instansi
+        return !$this->isInstansi();
+    }
+
+    public function getDashboardRoute(): string
+    {
+        return $this->isInstansi() ? 'admin.dashboard' : 'home';
+    }
     
     public function isPdam(): bool
     {
@@ -103,4 +123,5 @@ class User extends Authenticatable
     {
         return AppNotification::forUser($this)->unread()->count();
     }
+
 }

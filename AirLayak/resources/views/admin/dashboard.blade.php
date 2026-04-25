@@ -86,7 +86,11 @@
                 <div>
                     <h2 class="font-semibold text-gray-900">Heatmap Kelurahan</h2>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        Klik kelurahan untuk lihat semua laporan di area tersebut
+                        @php
+                            $totalReportsActive = collect($areasWithCount)->sum('count');
+                            $kelurahanWithReports = collect($areasWithCount)->where('count', '>', 0)->count();
+                        @endphp
+                        {{ $totalReportsActive }} laporan aktif di {{ $kelurahanWithReports }} kelurahan · {{ count($clusterMarkers) }} cluster aktif
                     </p>
                 </div>
                 <div class="flex items-center gap-3 text-xs">
@@ -244,8 +248,6 @@ function getHeatOpacity(count) {
 }
 
 function getHeatRadius(count) {
-    // Radius lingkaran heatmap dalam meters
-    // Lebih banyak laporan = lingkaran lebih besar
     if (count >= 5) return 1200;
     if (count >= 3) return 900;
     if (count >= 1) return 700;
@@ -305,7 +307,7 @@ areasWithCount.forEach(area => {
     circle.bindPopup(popupHtml, { maxWidth: 280 });
 });
 
-// Cluster overlay (lingkaran cluster yang ter-detect)
+// Cluster overlay (dashed outline untuk cluster yang ter-detect)
 clusterMarkers.forEach(cluster => {
     const severityColor = cluster.severity >= 70 ? '#dc2626' 
                         : cluster.severity >= 40 ? '#ea580c' 

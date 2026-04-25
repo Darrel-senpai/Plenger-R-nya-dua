@@ -15,7 +15,7 @@ class OperatorUserSeeder extends Seeder
                 'name' => 'Admin AirLayak',
                 'email' => 'admin@airlayak.id',
                 'password' => Hash::make('password'),
-                'auth_type' => 'guest',
+                'auth_type' => 'instansi',
                 'profile_completed' => true,
                 'role' => 'admin',
                 'city' => null,
@@ -26,7 +26,7 @@ class OperatorUserSeeder extends Seeder
                 'name' => 'Operator PDAM Surabaya',
                 'email' => 'pdam@airlayak.id',
                 'password' => Hash::make('password'),
-                'auth_type' => 'guest',
+                'auth_type' => 'instansi',
                 'profile_completed' => true,
                 'role' => 'pdam',
                 'city' => 'Surabaya',
@@ -37,7 +37,7 @@ class OperatorUserSeeder extends Seeder
                 'name' => 'Petugas Dinkes Surabaya',
                 'email' => 'dinkes@airlayak.id',
                 'password' => Hash::make('password'),
-                'auth_type' => 'guest',
+                'auth_type' => 'instansi',
                 'profile_completed' => true,
                 'role' => 'dinkes',
                 'city' => 'Surabaya',
@@ -53,10 +53,6 @@ class OperatorUserSeeder extends Seeder
             );
         }
 
-        $this->command->info('Created ' . count($users) . ' operator users.');
-        $this->command->info('Login credentials:');
-        $this->command->info('  admin@airlayak.id / password');
-        $this->command->info('  pdam@airlayak.id / password');
-        $this->command->info('  dinkes@airlayak.id / password');
+        $this->command->info('Created ' . count($users) . ' instansi users.');
     }
 }

@@ -59,16 +59,30 @@ class Report extends Model
     ];
 
     public const CATEGORIES = [
-        'bau', 'warna', 'sakit_perut', 'rasa_aneh', 'lainnya',
+        'bau',
+        'warna',
+        'sakit_perut',
+        'rasa_aneh',
+        'lainnya',
     ];
 
     public const WATER_SOURCES = [
-        'sumur', 'pdam', 'galon', 'air_isi_ulang', 'tidak_yakin',
+        'sumur',
+        'pdam',
+        'galon',
+        'air_isi_ulang',
+        'tidak_yakin',
     ];
 
     public const STATUSES = [
-        'pending', 'acknowledged', 'in_progress', 'extension_requested',
-        'awaiting_confirmation', 'resolved', 'dismissed', 'reopened',
+        'pending',
+        'acknowledged',
+        'in_progress',
+        'extension_requested',
+        'awaiting_confirmation',
+        'resolved',
+        'dismissed',
+        'reopened',
     ];
 
     public const PRIORITIES = ['low', 'normal', 'high', 'critical'];
@@ -76,7 +90,7 @@ class Report extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function (Report $report) {
             if (empty($report->reporter_confirm_token)) {
                 $report->reporter_confirm_token = Str::random(48);
@@ -85,7 +99,7 @@ class Report extends Model
     }
 
     // === RELATIONS ===
-    
+
     public function area(): BelongsTo
     {
         return $this->belongsTo(Area::class);
@@ -123,24 +137,27 @@ class Report extends Model
     }
 
     // === ACCESSORS ===
-    
+
     public function getLocationAttribute(): ?array
     {
         return $this->getPoint('location');
     }
 
     // === HELPERS ===
-    
+
     public function isOverdueAcknowledgment(): bool
     {
-        if ($this->status !== 'pending') return false;
+        if ($this->status !== 'pending')
+            return false;
         return $this->created_at->diffInHours(now()) >= 12;
     }
 
     public function isOverdueResolution(): bool
     {
-        if (!in_array($this->status, ['in_progress', 'extension_requested'])) return false;
-        if (!$this->eta_at) return false;
+        if (!in_array($this->status, ['in_progress', 'extension_requested']))
+            return false;
+        if (!$this->eta_at)
+            return false;
         return now()->isAfter($this->eta_at);
     }
 
@@ -159,8 +176,10 @@ class Report extends Model
         };
     }
 
+
+
     // === SCOPES ===
-    
+
     public function scopeOverdueAcknowledgment($query)
     {
         return $query->where('status', 'pending')

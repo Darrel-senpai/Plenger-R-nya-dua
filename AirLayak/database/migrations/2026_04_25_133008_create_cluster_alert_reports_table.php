@@ -14,7 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('cluster_alert_id');
             $table->unsignedBigInteger('report_id');
             
-            $table->timestamp('added_at')->useCurrent();
+            // Standard Laravel timestamps untuk compatibility dengan withTimestamps()
+            $table->timestamps();
             
             $table->unique(['cluster_alert_id', 'report_id']);
             $table->index('report_id');
