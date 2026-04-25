@@ -80,22 +80,9 @@
                     <button type="button" onclick="setRole(this, 'petugas')" class="role-btn flex-1 py-2 text-gray-400">
                         Petugas
                     </button>
-                    <button type="button" onclick="setRole(this, 'dinas')" class="role-btn flex-1 py-2 text-gray-400">
-                        Dinas
-                    </button>
                 </div>
 
                 <input type="hidden" name="role" id="role-input" value="warga">
-
-                <!-- Email -->
-                <input name="email" type="email" required
-                    class="w-full h-11 border rounded-lg px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    placeholder="Email" value="{{ old('email') }}" />
-
-                <!-- Password -->
-                <input name="password" type="password" required
-                    class="w-full h-11 border rounded-lg px-3 mb-2 focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    placeholder="Password" />
 
                 <!-- Google Login -->
                 <a href="{{ route('auth.google') }}" class="btn btn-google mb-2">
@@ -116,22 +103,6 @@
                         </svg>
                         Masuk dengan Google
                     </a>
-
-                    <!-- Error -->
-                    @error('email')
-                    <div class="text-red-500 text-xs mb-2">{{ $message }}</div>
-                    @enderror
-
-                    <!-- Submit -->
-                    <button type="submit"
-                        class="w-full h-12 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-800 transition">
-                        Masuk
-                    </button>
-
-                    <div class="text-right text-xs text-teal-600 mb-4 cursor-pointer">
-                        {{-- <a href="{{ route('password.request') }}">Lupa password?</a> --}}
-                        <a href="#">Lupa password?</a>
-                    </div>
             </form>
 
             <!-- Divider -->
