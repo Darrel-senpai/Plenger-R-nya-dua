@@ -141,7 +141,7 @@
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            {{-- <a href="{{ route('guest') }}" --}} <a href="{{ route('welcome') }}"
+            {{-- <a href="{{ route('guest') }}" --}} <a href="{{ route('auth.guest') }}"
                 class="block text-center w-full h-11 leading-11 border rounded-xl hover:bg-gray-50">
                 Masuk sebagai tamu
             </a>

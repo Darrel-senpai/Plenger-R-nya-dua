@@ -13,6 +13,11 @@ class GoogleAuthController extends Controller
     {
         // composer require laravel/socialite
         // Redirect to Google's OAuth 2.0 server
+
+        if (Auth::check()) {
+            return redirect()->route('welcome');
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -25,15 +30,18 @@ class GoogleAuthController extends Controller
             return redirect('/')->with('error', 'Authentication failed. Please try again.');
         }
 
-        // Find or create new user
-        $user = User::updateOrCreate(
-            ['google_id' => $googleUser->getId()],
-            [
+        $user = User::where('google_id', $googleUser->getId())
+            ->orWhere('email', $googleUser->getEmail())
+            ->first();
+
+        if (!$user) {
+            $user = User::create([
+                'google_id' => $googleUser->getId(),
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
-                'auth_type' => 'google',  // ← also add this
-            ]
-        );
+                'auth_type' => 'google',
+            ]);
+        }
 
         Auth::login($user, true);
 
