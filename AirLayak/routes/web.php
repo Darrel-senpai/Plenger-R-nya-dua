@@ -10,6 +10,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\GuestAuthController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\warnPDAM;
+use App\Models\Area;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/homepage', function () {
         return view('homepage');
     })->name('homepage');
+
+    Route::get('/form/laporan', function() {
+        // Ambil data kelurahan dan kecamatan
+        $areas = Area::orderBy('kecamatan', 'asc')
+                    ->orderBy('kelurahan', 'asc')
+                    ->get(['id', 'kecamatan', 'kelurahan']);
+
+        // Kelompokkan berdasarkan kecamatan
+        $kelurahanMap = $areas->groupBy('kecamatan')->map(function ($items) {
+            return $items->map(function ($item) {
+                return [
+                    'id' => $item->id, 
+                    'name' => $item->kelurahan // Ubah nama key jadi 'name' sesuai JS kamu
+                ];
+            });
+        });
+
+        return view('formlaporan', compact('kelurahanMap'));
+    })->name('form.laporan');
+
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
 

@@ -11,6 +11,29 @@
 
     @vite(['resources/css/app.css', 'resources/css/homepage.css', 'resources/js/app.js', 'resources/js/homepage.js'])
 
+    <style>
+        /* Animasi muncul (Slide Up) */
+        .popup-show {
+            display: block !important;
+            animation: slideInUp 0.5s forwards;
+        }
+
+        /* Animasi keluar (Slide Out ke Kanan) */
+        .popup-exit {
+            animation: slideOutRight 0.6s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(100%, 0); }
+        }
+    </style>
+
 </head>
 
 <body class="bg-slate-200 font-sans text-gray-900">
@@ -37,10 +60,9 @@
             <button
                 class="border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-gray-50 transition-colors"
                 onclick="togglePanel()">📋 Laporan &amp; Info</button>
-            <button
+            <a
                 class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors"
-                onclick="openLapor()">+ Lapor Sekarang</button>
-            <a href="{{ route('email') }}">Kirim email</a>
+                href="{{ route('form.laporan') }}">+ Lapor Sekarang</a>
         </div>
     </nav>
 
@@ -168,123 +190,130 @@
         ✅ &nbsp;<span id="toast-msg">Laporan diterima!</span>
     </div>
 
+    <div id="warning-popup" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[2000] w-[min(400px,calc(100vw-40px))] bg-white border-l-4 border-amber-500 shadow-2xl rounded-r-xl p-4 cursor-pointer transform transition-all duration-500 ease-in-out hidden" onclick="closeWarningPopup()">
+        <div class="flex items-start gap-3">
+            <div class="bg-amber-100 p-2 rounded-full text-xl">⚠️</div>
+            <div class="flex-1">
+                <h4 class="text-[13px] font-bold text-gray-900">Surat Peringatan Terkirim!</h4>
+                <p class="text-[11px] text-gray-600 leading-relaxed mt-1">
+                    Laporan cluster telah mencapai ambang batas. Surat peringatan resmi telah otomatis diteruskan ke pihak PDAM & Dinas Lingkungan Hidup terkait.
+                </p>
+                <p class="text-[10px] text-amber-600 font-bold mt-2 uppercase tracking-wider">Klik untuk menutup →</p>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
         var mapObj, selCatEl = null, panelOpen = false;
 
-    var mapObj, selCatEl = null, panelOpen = false;
+        var mapObj, selCatEl = null, panelOpen = false;
 
-function togglePanel() {
-    panelOpen = !panelOpen;
-    document.getElementById('panelBody').classList.toggle('open', panelOpen);
-    document.getElementById('chevron').classList.toggle('open', panelOpen);
-}
-function togglePanel() {
-    panelOpen = !panelOpen;
-    document.getElementById('panelBody').classList.toggle('open', panelOpen);
-    document.getElementById('chevron').classList.toggle('open', panelOpen);
-}
+    function togglePanel() {
+        panelOpen = !panelOpen;
+        document.getElementById('panelBody').classList.toggle('open', panelOpen);
+        document.getElementById('chevron').classList.toggle('open', panelOpen);
+    }
 
-function openLapor() {
-    if (!panelOpen) togglePanel();
-    switchTabById('lapor');
-}
-function openLapor() {
-    if (!panelOpen) togglePanel();
-    switchTabById('lapor');
-}
+    function openLapor() {
+        if (!panelOpen) togglePanel();
+        switchTabById('lapor');
+    }
 
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    btn.classList.add('active');
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
-function switchTab(id, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    btn.classList.add('active');
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
+        btn.classList.add('active');
+        var el = document.getElementById('sub-' + id);
+        el.classList.remove('hidden');
+        el.classList.add('active');
+    }
 
-function switchTabById(id) {
-    var tabs = document.querySelectorAll('.tab');
-    tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
-function switchTabById(id) {
-    var tabs = document.querySelectorAll('.tab');
-    tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
-    document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-    var el = document.getElementById('sub-' + id);
-    el.classList.remove('hidden');
-    el.classList.add('active');
-}
+    function switchTabById(id) {
+        var tabs = document.querySelectorAll('.tab');
+        tabs.forEach((t, i) => t.classList.toggle('active', (id === 'lapor' && i === 0) || (id === 'area' && i === 1)));
+        document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
+        var el = document.getElementById('sub-' + id);
+        el.classList.remove('hidden');
+        el.classList.add('active');
+    }
 
-function selCat(el) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    selCatEl = el;
-}
-function selCat(el) {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    selCatEl = el;
-}
+    function selCat(el) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        selCatEl = el;
+    }
 
-function toast(msg) {
-    var t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-}
-function toast(msg) {
-    var t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-}
+    function toast(msg) {
+        var t = document.getElementById('toast');
+        document.getElementById('toast-msg').textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
 
-function doFilter() {
-    // U can do filter logic here
-    var kel = document.getElementById('kel').value;
-    if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
-    if (!kel) { toast('Pilih kelurahan Anda.'); return; }
-    toast('Filter berhasil!');
-}
-function doSubmit() {
-    var kel = document.getElementById('kel').value;
-    if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
-    if (!kel) { toast('Pilih kelurahan Anda.'); return; }
-    toast('Laporan diterima! Jika ada 2 laporan lain di area kamu, kami akan mengeluarkan peringatan.');
-}
+    function doFilter() {
+        // U can do filter logic here
+        var kel = document.getElementById('kel').value;
+        if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
+        if (!kel) { toast('Pilih kelurahan Anda.'); return; }
+        toast('Filter berhasil!');
+    }
+    function doSubmit() {
+        var kel = document.getElementById('kel').value;
+        if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
+        if (!kel) { toast('Pilih kelurahan Anda.'); return; }
+        toast('Laporan diterima! Jika ada 2 laporan lain di area kamu, kami akan mengeluarkan peringatan.');
+    }
 
-function flyAndClose(coords) {
-    // Tutup panel
-    panelOpen = false;
-    document.getElementById('panelBody').classList.remove('open');
-    document.getElementById('chevron').classList.remove('open');
+    function flyAndClose(coords) {
+        // Tutup panel
+        panelOpen = false;
+        document.getElementById('panelBody').classList.remove('open');
+        document.getElementById('chevron').classList.remove('open');
 
-    // Zoom ke lokasi
-    mapObj.flyTo(coords, 16, { duration: 1.4 });
-}
-function fly(coords) {
-    mapObj.flyTo(coords, 14, { duration: 1.2 });
-}
+        // Zoom ke lokasi
+        mapObj.flyTo(coords, 16, { duration: 1.4 });
+    }
+    function fly(coords) {
+        mapObj.flyTo(coords, 14, { duration: 1.2 });
+    }
 
-// function fly(coords) {
-//     mapObj.flyTo(coords, 14, { duration: 1.2 });
-// }
 
-    </script>
-    </script>
-</body>
+
+    // Fungsi untuk menampilkan popup (Bisa dipanggil setelah doSubmit atau kondisi tertentu)
+    function showWarningPopup() {
+        const popup = document.getElementById('warning-popup');
+        popup.classList.remove('hidden', 'popup-exit');
+        popup.classList.add('popup-show');
+    }
+
+    // Fungsi untuk menutup dengan animasi slide out ke kanan
+    function closeWarningPopup() {
+        const popup = document.getElementById('warning-popup');
+        popup.classList.add('popup-exit');
+        
+        // Hapus elemen dari tampilan setelah animasi selesai
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 600);
+    }
+
+    // CONTOH: Modifikasi fungsi doSubmit Anda agar memunculkan popup ini
+    function doSubmit() {
+        var kel = document.getElementById('kel').value;
+        if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
+        if (!kel) { toast('Pilih kelurahan Anda.'); return; }
+        
+        toast('Laporan diterima!');
+        
+        // Simulasi jika laporan memicu peringatan (tunggu 1 detik lalu muncul)
+        setTimeout(() => {
+            showWarningPopup();
+        }, 1000);
+    }
+
+    showWarningPopup();
+        </script>
+    </body>
 
 </html>
