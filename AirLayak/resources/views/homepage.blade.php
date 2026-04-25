@@ -18,11 +18,11 @@
     <!-- NAV -->
 
     <nav class="fixed top-0 left-0 right-0 z-[1000] bg-white backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-5 h-[54px]">
-    <!-- Logo -->
-    <div class="flex items-center gap-2">
-        <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-[30px] w-auto">
-        <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Warga</span></span>
-    </div>
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+            <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-8 w-auto object-contain flex-shrink-0">
+            <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Warga</span></span>
+        </div>
 
         <!-- Center badges -->
         <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
