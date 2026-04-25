@@ -8,15 +8,22 @@ use Illuminate\Support\Facades\Auth;
 class GuestAuthController extends Controller
 {
     public function login()
-{
-    $guest = User::create([
-        'name'      => 'Tamu ' . rand(1000, 9999),
-        'auth_type' => 'guest',
-    ]);
+    {
+        $guest = User::firstOrCreate(
+            ['email' => 'dummy@gmail.com'],
+            [
+                'name'      => 'Tamu',
+                'auth_type' => 'guest',
+            ]
+        );
 
-    Auth::login($guest, false);
-    session()->save();
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+        Auth::login($guest, false);
 
-    return redirect()->route('dashboard');
-}
+        return redirect()->route('homepage')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->header('Pragma', 'no-cache');
+    }
 }
