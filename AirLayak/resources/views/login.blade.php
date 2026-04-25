@@ -141,13 +141,10 @@
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            <form action="{{ route('auth.guest') }}" method="POST">
-                @csrf
-                <button type="submit"
-                    class="block text-center w-full h-11 border rounded-xl hover:bg-gray-50">
-                    Masuk sebagai tamu
-                </button>
-            </form>
+            <a href="{{ route('auth.guest') }}"
+                class="flex items-center justify-center w-full h-11 border rounded-xl hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors duration-150 cursor-pointer no-underline">
+                Masuk sebagai tamu
+            </a>
 
         </div>
     </div>

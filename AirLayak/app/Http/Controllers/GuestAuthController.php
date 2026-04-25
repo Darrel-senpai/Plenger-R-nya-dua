@@ -9,20 +9,21 @@ class GuestAuthController extends Controller
 {
     public function login()
     {
-
-        $guest = User::where('email', 'dummy@gmail.com')
-            ->first();
-
-        if(!$guest) {
-            $guest = User::create([
+        $guest = User::firstOrCreate(
+            ['email' => 'dummy@gmail.com'],
+            [
                 'name'      => 'Tamu',
                 'auth_type' => 'guest',
-                'email'     => 'dummy@gmail.com'
-            ]);
-        }
+            ]
+        );
 
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
         Auth::login($guest, false);
-    
-        return redirect()->route('homepage');
+
+        return redirect()->route('homepage')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            ->header('Pragma', 'no-cache');
     }
 }
