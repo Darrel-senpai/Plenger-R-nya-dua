@@ -8,15 +8,21 @@ use Illuminate\Support\Facades\Auth;
 class GuestAuthController extends Controller
 {
     public function login()
-{
-    $guest = User::create([
-        'name'      => 'Tamu ' . rand(1000, 9999),
-        'auth_type' => 'guest',
-    ]);
+    {
 
-    Auth::login($guest, false);
-    session()->save();
+        $guest = User::where('email', 'dummy@gmail.com')
+            ->first();
 
-    return redirect()->route('dashboard');
-}
+        if(!$guest) {
+            $guest = User::create([
+                'name'      => 'Tamu',
+                'auth_type' => 'guest',
+                'email'     => 'dummy@gmail.com'
+            ]);
+        }
+
+        Auth::login($guest, false);
+    
+        return redirect()->route('homepage');
+    }
 }

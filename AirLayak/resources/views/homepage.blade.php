@@ -6,7 +6,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+
+    @vite(['resources/css/app.css', 'resources/css/homepage.css', 'resources/js/app.js'])
+
+    {{-- <script>
     tailwind.config = {
         theme: {
         extend: {
@@ -31,53 +34,7 @@
         }
         }
     }
-    </script>
-    <style>
-    /* Non-Tailwind necessities */
-    html, body { height: 100%; overflow: hidden; }
-    #map { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 0; }
-
-    /* Category button active state */
-    .cat-btn.active { border-color: #1A6BCC; background: #EBF3FF; }
-
-    /* Panel body collapse */
-    .panel-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-    .panel-body.open { max-height: 520px; }
-
-    /* Chevron */
-    .chevron { transition: transform 0.25s; }
-    .chevron.open { transform: rotate(180deg); }
-
-    /* Toast */
-    .toast {
-        position: fixed; bottom: 20px; left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        opacity: 0; transition: all 0.3s ease; z-index: 2000;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-    /* Select arrow */
-    select {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        appearance: none;
-    }
-
-    /* Leaflet popup */
-    .leaflet-popup-content-wrapper { border-radius: 10px !important; padding: 0 !important; overflow: hidden; }
-    .leaflet-popup-content { margin: 0 !important; }
-
-    /* Scrollbar */
-    .area-scroll::-webkit-scrollbar { width: 3px; }
-    .area-scroll::-webkit-scrollbar-thumb { background: #E8EAED; border-radius: 3px; }
-
-    /* Tab active */
-    .tab.active { background: #fff; color: #1A6BCC; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-
-    /* Float panel transition */
-    .float-panel { transition: all 0.3s ease; }
-    </style>
+    </script> --}}
 </head>
 <body class="bg-slate-200 font-sans text-gray-900">
 

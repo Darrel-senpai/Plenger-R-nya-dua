@@ -19,7 +19,6 @@ Route::get('/login', fn() => view('login'))->name('login');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+    Route::get('/homepage', [HomepageController::class, 'homepage'])->name('homepage');
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
-
-Route::get('/homepage', [HomepageController::class, 'homepage']);
