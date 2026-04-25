@@ -343,62 +343,186 @@
             mapObj.flyTo(coords, 14, { duration: 1.2 });
         }
 
-        // MAP INIT
-        mapObj = L.map('map', { center: [-7.257, 112.752], zoom: 12, zoomControl: false });
-        L.control.zoom({ position: 'bottomleft' }).addTo(mapObj);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
+        // 1. Inisialisasi Peta
+        // 1. Inisialisasi Peta
+mapObj = L.map('map', { center: [-7.257, 112.752], zoom: 12, zoomControl: false });
+L.control.zoom({ position: 'bottomleft' }).addTo(mapObj);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(mapObj);
+
+// 2. Data Status Tahap Kelurahan
+// Saya telah menambah lebih banyak data kelurahan untuk visualisasi yang lebih padat
+var reportData = {
+    // === 🔴 CLUSTER ALERT (15 AREA - KRITIS > 3 LAPORAN) ===
+    'Semampir': { n: 25, d: 'KRITIS: Kontaminasi limbah industri; air berwarna hitam & berminyak' },
+    'Sidotopo': { n: 20, d: 'DARURAT: Wabah gatal-gatal; air berbau bangkai pekat' },
+    'Putat Jaya': { n: 18, d: 'Pipa Utama Pecah: Air bercampur lumpur hitam & cacing' },
+    'Gading': { n: 15, d: 'Klorin Berlebih: Bau menyengat & mata perih di 3 blok' },
+    'Kaliasin': { n: 14, d: 'Mati Air Total (18 Jam): Warga mulai kesulitan air bersih' },
+    'Morokrembangan': { n: 13, d: 'Air Berbusa Deterjen: Beracun jika dikonsumsi' },
+    'Wonokromo': { n: 12, d: 'Waspada Diare: 10 warga dilarikan ke puskesmas' },
+    'Nyamplungan': { n: 11, d: 'Intrusi Air Laut: Air terasa sangat asin & keruh' },
+    'Tembok Dukuh': { n: 10, d: 'Air Berkarat: Warna oranye pekat, merusak filter' },
+    'Kapasari': { n: 9,  d: 'Ditemukan larva & jentik nyamuk massal di saluran' },
+    'Sawahan': { n: 8,  d: 'Air berbau sulfur/belerang sangat tajam' },
+    'Pabean Cantian': { n: 7, d: 'Pasokan macet; air keluar hanya berupa udara' },
+    'Bubutan': { n: 6,  d: 'Endapan lumpur pasir menyumbat semua keran' },
+    'Tegalsari': { n: 5, d: 'Air berlendir & sulit dibilas sabun' },
+    'Genteng': { n: 4,  d: 'Rasa logam tajam; air meninggalkan bekas hitam' },
+
+    // === 🟡 WASPADA (60 AREA - GANGGUAN 1-3 LAPORAN) ===
+    'Siwalankerto': { n: 3, d: 'Tekanan air menurun drastis' },
+    'Menur Pumpungan': { n: 2, d: 'Air berbau tanah saat pagi' },
+    'Keputih': { n: 1, d: 'Sedikit endapan kapur' },
+    'Klampis Ngasem': { n: 3, d: 'Air berwarna kekuningan ringan' },
+    'Wonorejo': { n: 2, d: 'Aliran air tersendat-sendat' },
+    'Medokan Ayu': { n: 3, d: 'Air terasa agak pahit' },
+    'Ketabang': { n: 1, d: 'Bau kaporit tipis' },
+    'Sukolilo': { n: 2, d: 'Air berminyak di permukaan' },
+    'Gubeng': { n: 3, d: 'Keruh saat jam sibuk sore' },
+    'Embong Kaliasin': { n: 1, d: 'Laporan bau besi ringan' },
+    'Baratajaya': { n: 2, d: 'Ditemukan pasir halus' },
+    'Airlangga': { n: 1, d: 'Tekanan air tidak stabil' },
+    'Mulyorejo': { n: 3, d: 'Air berbau amis samar' },
+    'Tandes': { n: 2, d: 'Warna coklat teh transparan' },
+    'Suko Manunggal': { n: 1, d: 'Mati air singkat 30 menit' },
+    'Rungkut Kidul': { n: 3, d: 'Laporan air berpasir' },
+    'Kalirungkut': { n: 2, d: 'Debit air kecil di lantai 2' },
+    'Kedung Baruk': { n: 3, d: 'Air berkapur putih' },
+    'Penjaringan Sari': { n: 1, d: 'Air berbau tanah' },
+    'Gunung Anyar': { n: 2, d: 'Endapan coklat di bak' },
+    'Jambangan': { n: 1, d: 'Laporan air berasa' },
+    'Karah': { n: 2, d: 'Keruh setelah perbaikan pipa' },
+    'Kebonsari': { n: 3, d: 'Bau lumpur tipis' },
+    'Gayungan': { n: 1, d: 'Air keluar udara saja' },
+    'Menanggal': { n: 2, d: 'Laporan air agak panas' },
+    'Dukuh Pakis': { n: 3, d: 'Air berbau klorin' },
+    'Pradah Kalikendal': { n: 1, d: 'Debit air mengecil' },
+    'Gunung Sari': { n: 2, d: 'Air berwarna kuning' },
+    'Lontar': { n: 3, d: 'Pasir halus di keran' },
+    'Sambikerep': { n: 2, d: 'Bau tanah menyengat' },
+    'Made': { n: 1, d: 'Air keruh sedikit' },
+    'Lakarsantri': { n: 3, d: 'Laporan air berminyak' },
+    'Jeruk': { n: 2, d: 'Air berasa pahit' },
+    'Benowo': { n: 1, d: 'Tekanan air rendah' },
+    'Sememi': { n: 3, d: 'Endapan putih/kapur' },
+    'Kandangan': { n: 2, d: 'Air berbau besi' },
+    'Tambak Osowilangun': { n: 1, d: 'Laporan air payau' },
+    'Romokalisari': { n: 2, d: 'Air agak keruh' },
+    'Banjarsugihan': { n: 3, d: 'Laporan cacing 1 titik' },
+    'Manukan Kulon': { n: 1, d: 'Bau lumpur pagi hari' },
+    'Manukan Wetan': { n: 2, d: 'Debit air kecil sore hari' },
+    'Balongsari': { n: 3, d: 'Air kuning transparan' },
+    'Kupang Krajan': { n: 1, d: 'Laporan bau besi' },
+    'Petemon': { n: 2, d: 'Air berpasir halus' },
+    'Banyu Urip': { n: 3, d: 'Mati air berulang' },
+    'Putat Gede': { n: 1, d: 'Sedikit berminyak' },
+    'Sonokwijenan': { n: 2, d: 'Tekanan menurun' },
+    'Simomulyo': { n: 3, d: 'Warna coklat muda' },
+    'Gading': { n: 2, d: 'Bau kaporit' },
+    'Kenjeran': { n: 3, d: 'Laporan air asin' },
+    'Bulak': { n: 1, d: 'Air keruh sedikit' },
+    'Kedung Cowek': { n: 2, d: 'Endapan pasir' },
+    'Tanah Kali Kedinding': { n: 3, d: 'Air berbau amis' },
+    'Sidotopo Wetan': { n: 1, d: 'Debit kecil' },
+    'Bulak Banteng': { n: 2, d: 'Warna kuning teh' },
+    'Tambak Wedi': { n: 3, d: 'Air payau ringan' },
+    'Ujung': { n: 1, d: 'Bau lumpur' },
+    'Perak Utara': { n: 2, d: 'Air berminyak' },
+    'Perak Timur': { n: 3, d: 'Endapan karat' },
+    'Krembangan Utara': { n: 1, d: 'Laporan air berbau' }
+};
+
+var styleConfig = {
+    cluster: { fill: '#EF4444', stroke: '#DC2626', op: 0.6 },
+    waspada: { fill: '#F59E0B', stroke: '#D97706', op: 0.4 },
+    normal:  { fill: '#6B7280', stroke: '#4B5563', op: 0.1 }
+};
+
+// 3. Load GeoJSON Kelurahan
+// 3. Load GeoJSON Kelurahan
+fetch('35.78_kelurahan_simple.geojson') 
+    .then(res => res.json())
+    .then(geojsonData => {
+        
+        // PERBAIKAN: Definisikan geoLayer agar .getBounds() tidak error
+        var geoLayer = L.geoJSON(geojsonData, {
+            style: function(feature) {
+                var name = feature.properties.nm_kelurahan;
+                var info = reportData[name] || { n: 0 };
+                var n = info.n;
+
+                var fillColor, strokeColor, op;
+
+                if (n === 0) {
+                    fillColor = '#6B7280'; strokeColor = '#4B5563'; op = 0.1;
+                } else if (n <= 3) {
+                    fillColor = '#F59E0B'; strokeColor = '#D97706'; op = 0.4;
+                } else {
+                    // Gradasi Merah ke Maroon
+                    if (n > 15) fillColor = '#7F1D1D';
+                    else if (n > 10) fillColor = '#991B1B';
+                    else if (n > 6) fillColor = '#B91C1C';
+                    else fillColor = '#EF4444';
+                    
+                    strokeColor = '#450a0a'; // Stroke coklat gelap untuk area kritis
+                    op = 0.7;
+                }
+
+                return {
+                    fillColor: fillColor,
+                    color: strokeColor,
+                    weight: n > 3 ? 2 : 1,
+                    opacity: 1,
+                    fillOpacity: op,
+                    dashArray: n === 0 ? '3, 3' : '0'
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                var name = feature.properties.nm_kelurahan;
+                var info = reportData[name] || { n: 0, d: 'Tiada laporan aktif' };
+                
+                // Tentukan status secara dinamis untuk Popup
+                var statusLabel, statusColor;
+                if (info.n === 0) {
+                    statusLabel = '⚪ Normal'; statusColor = '#6B7280';
+                } else if (info.n <= 3) {
+                    statusLabel = '🟡 Waspada'; statusColor = '#D97706';
+                } else {
+                    statusLabel = '🔴 Cluster Alert'; statusColor = '#DC2626';
+                }
+
+                var pop = `<div style="padding:14px;font-family:Plus Jakarta Sans,sans-serif;min-width:210px">
+                    <div style="font-size:14px;font-weight:800;margin-bottom:2px">Kel. ${name}</div>
+                    <div style="font-size:11px;color:#666;margin-bottom:10px">Surabaya, Jawa Timur</div>
+                    <div style="font-size:11px;border-top:1px solid #f0f0f0;padding-top:8px">
+                        <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:#666">Status</span><span style="font-weight:700;color:${statusColor}">${statusLabel}</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:#666">Laporan (24j)</span><span style="font-weight:700;color:${statusColor}">${info.n} case</span></div>
+                        <div style="padding:4px 0;color:#444;line-height:1.4;font-style:italic">"${info.d}"</div>
+                    </div>
+                    <a href="#" style="display:block;margin-top:8px;width:100%;background:#1A6BCC;color:#fff;border-radius:7px;padding:8px;font-size:11px;font-weight:700;text-align:center;text-decoration:none">Tindakan Kecemasan →</a>
+                </div>`;
+                
+                layer.bindPopup(pop, { maxWidth: 260 });
+                
+                // Efek Hover
+                layer.on('mouseover', function() {
+                    this.setStyle({ fillOpacity: 0.9, weight: 3 });
+                });
+                layer.on('mouseout', function() {
+                    geoLayer.resetStyle(this); // Cara termudah mengembalikan style awal
+                });
+            }
         }).addTo(mapObj);
 
-        var data = [
-            { name: 'Semampir',    c: [-7.223, 112.748], s: 'cluster', n: 5, d: '3× bau menyengat, 2× air keruh' },
-            { name: 'Tambaksari',  c: [-7.247, 112.762], s: 'cluster', n: 4, d: '2× sakit perut, 2× berbau' },
-            { name: 'Kenjeran',    c: [-7.225, 112.775], s: 'cluster', n: 3, d: '3× air berwarna kuning' },
-            { name: 'Bubutan',     c: [-7.240, 112.730], s: 'waspada', n: 2, d: '1× bau, 1× warna' },
-            { name: 'Tegalsari',   c: [-7.265, 112.730], s: 'waspada', n: 2, d: '2× berbau klorin' },
-            { name: 'Wonokromo',   c: [-7.298, 112.735], s: 'waspada', n: 1, d: '1× air keruh' },
-            { name: 'Tenggilis',   c: [-7.335, 112.765], s: 'waspada', n: 1, d: '1× sakit perut' },
-            { name: 'Rungkut',     c: [-7.318, 112.780], s: 'normal',  n: 0, d: 'Tidak ada laporan' },
-            { name: 'Mulyorejo',   c: [-7.262, 112.790], s: 'normal',  n: 0, d: 'Tidak ada laporan' },
-            { name: 'Gayungan',    c: [-7.328, 112.745], s: 'normal',  n: 0, d: 'Tidak ada laporan' },
-            { name: 'Dukuh Pakis', c: [-7.285, 112.715], s: 'normal',  n: 0, d: 'Tidak ada laporan' },
-            { name: 'Lakarsantri', c: [-7.310, 112.680], s: 'normal',  n: 0, d: 'Tidak ada laporan' }
-        ];
-
-        var cm = {
-            cluster: { fill: '#EF4444', stroke: '#DC2626', op: 0.7, r: 1800 },
-            waspada: { fill: '#F59E0B', stroke: '#D97706', op: 0.5, r: 1400 },
-            normal:  { fill: '#6B7280', stroke: '#4B5563', op: 0.25, r: 1100 }
-        };
-
-        data.forEach(function(k) {
-        var c = cm[k.s];
-        var sl = k.s === 'cluster' ? '🔴 Cluster Alert' : k.s === 'waspada' ? '🟡 Waspada' : '⚪ Normal';
-        var rc = k.s === 'cluster' ? '#DC2626' : k.s === 'waspada' ? '#D97706' : '#6B7280';
-
-        var circle = L.circle(k.c, {
-            radius: c.r,
-            fillColor: c.fill,
-            fillOpacity: c.op,
-            color: c.stroke,
-            weight: k.s === 'cluster' ? 2 : 1.5,
-            dashArray: k.s === 'cluster' ? '0' : '5,5'
-        }).addTo(mapObj);
-
-        var pop = '<div style="padding:14px;font-family:Plus Jakarta Sans,sans-serif;min-width:210px">'
-            + '<div style="font-size:14px;font-weight:800;margin-bottom:2px">Kel. ' + k.name + '</div>'
-            + '<div style="font-size:11px;color:#666;margin-bottom:10px">Surabaya</div>'
-            + '<div style="font-size:11px;border-top:1px solid #f0f0f0;padding-top:8px">'
-            + '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:#666">Status</span><span style="font-weight:700;color:' + rc + '">' + sl + '</span></div>'
-            + '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:#666">24 jam</span><span style="font-weight:700;color:' + rc + '">' + k.n + ' laporan</span></div>'
-            + '<div style="padding:4px 0;color:#444;line-height:1.4">' + k.d + '</div>'
-            + '</div>'
-            + '<a href="panduan.html" style="display:block;margin-top:8px;width:100%;background:#1A6BCC;color:#fff;border:none;border-radius:7px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none">Lihat Panduan Tindakan →</a>'
-            + '</div>';
-
-        circle.bindPopup(pop, { maxWidth: 260 });
-        });
+        // --- PEMBATASAN MAP ---
+        var surabayaBounds = geoLayer.getBounds();
+        mapObj.fitBounds(surabayaBounds);
+        mapObj.setMaxBounds(surabayaBounds.pad(0.5));
+        mapObj.options.maxBoundsViscosity = 0.5;
+        mapObj.options.minZoom = mapObj.getZoom() - 1;
+    });
         </script>
     </body>
 </html>
