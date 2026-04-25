@@ -20,7 +20,7 @@ Future feature
 - Middleware authentication
 - Database
 - UI Admin
-- 
+- Form Pengajuan Laporan
 
 Framework: Laravel 
 bahasa pemrograman: html + css + js + php
