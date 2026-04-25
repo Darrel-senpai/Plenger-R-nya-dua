@@ -249,6 +249,46 @@ fetch('35.78_kelurahan_simple.geojson')
             }
         }).addTo(mapObj);
 
+        var selectedKel = '';
+
+        function buildKelList() {
+            var sortedEntries = Object.entries(reportData).sort((a, b) => b[1].n - a[1].n);
+            var listEl = document.getElementById('kel-list');
+            listEl.innerHTML = '';
+
+            sortedEntries.forEach(function([name, info]) {
+                var color, textColor;
+                if (info.n === 0)     { color = '#9CA3AF'; textColor = '#6B7280'; }
+                else if (info.n <= 3) { color = '#F59E0B'; textColor = '#D97706'; }
+                else                  { color = '#EF4444'; textColor = '#DC2626'; }
+
+                var div = document.createElement('div');
+                div.className = 'kel-item bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2.5 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all';
+                div.dataset.name = name;
+                div.innerHTML =
+                    '<div class="w-2 h-2 rounded-full flex-shrink-0" style="background:' + color + '"></div>' +
+                    '<div class="flex-1">' +
+                        '<div class="text-xs font-bold">' + name + '</div>' +
+                        '<div class="text-[10px] text-gray-500 mt-0.5">' + info.d + '</div>' +
+                    '</div>' +
+                    '<div class="text-[15px] font-extrabold font-mono" style="color:' + textColor + '">' + info.n + '</div>';
+
+                div.onclick = function() {
+                    // Toggle seleksi
+                    document.querySelectorAll('.kel-item').forEach(el => {
+                        el.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+                    });
+                    div.classList.add('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+                    selectedKel = name;
+                };
+
+                listEl.appendChild(div);
+            });
+        }
+
+        // Panggil setelah data siap (di dalam .then() atau setelah reportData didefinisikan)
+        buildKelList();
+
         // --- LOGIKA UPDATE STATISTIK PANEL ---
         function updateStats() {
             let totalLaporan = 0;
@@ -313,7 +353,6 @@ var worstN    = worst[1].n;
 var worstDesc = worst[1].d;
 
 // Kalimat ringkas dari kelurahan cluster alert terparah
-// Ambil kata kunci pertama sebelum titik dua
 function shortDesc(d) {
     var colon = d.indexOf(':');
     return colon > -1 ? d.substring(0, colon).toLowerCase() : d.split(' ').slice(0, 4).join(' ').toLowerCase();
@@ -328,7 +367,6 @@ document.getElementById('alert-text').innerHTML =
     'Kemungkinan ada gangguan distribusi PDAM Surya. Warga disarankan tidak mengonsumsi air langsung.';
 
 // ─── AREA LIST (Cek Area Saya) ───────────────────────────────────────────
-// Diurutkan dari terbanyak ke terkecil, render otomatis
 var sortedEntries = entries.slice().sort(function(a, b) { return b[1].n - a[1].n; });
 
 var areaListEl = document.getElementById('area-list');

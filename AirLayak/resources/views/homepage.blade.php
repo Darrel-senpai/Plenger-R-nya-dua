@@ -28,7 +28,9 @@
             <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-blink-fast"></div>
             <span class="text-[11px] font-semibold text-gray-500">Live · Surabaya</span>
             <span id="nav-cluster-badge"
-                class="font-mono text-[10px] bg-danger text-white px-2.5 py-0.5 rounded-full animate-blink"></span>
+                class="font-mono text-[10px] text-white px-2.5 py-0.5 rounded-full animate-blink"
+                style="background:#DC2626">
+            </span>
         </div>
 
         <!-- Right buttons -->
@@ -117,18 +119,13 @@
                         </button>
                     </div>
                     
-                    <div class="flex gap-2">
-                        <select id="kel" class="flex-1 px-3 py-2.5 border-[1.5px] border-gray-200 rounded-xl font-sans text-xs text-gray-900 bg-white focus:border-blue focus:ring-2 focus:ring-blue/20 transition-all outline-none">
-                            <option value="">Pilih Kelurahan Anda...</option>
-                            <option>Ampel</option>
-                            <option>Sidotopo</option>
-                            <option>Putat Jaya</option>
-                            <option>Gading</option>
-                        </select>
-                        <button class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-all shadow-md shadow-blue/20" onclick="doSubmit()">
-                            Kirim →
-                        </button>
+                    <div id="kel-list" class="area-scroll flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1 mb-3">
+                        {{-- diisi otomatis oleh JS --}}
                     </div>
+
+                    <button class="w-full px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-all shadow-md shadow-blue/20" onclick="doSubmit()">
+                        Kirim →
+                    </button>
                 </div>
 
                 <div class="subpanel hidden" id="sub-area">
@@ -177,11 +174,6 @@
                 document.getElementById('chevron').classList.toggle('open', panelOpen);
             }
 
-            function openLapor() {
-                
-                
-            }
-
             function switchTab(id, btn) {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.subpanel').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
@@ -221,13 +213,17 @@
                 toast('Filter berhasil!');
             }
 
+            function doSubmit() {
+                if (!selCatEl)    { toast('Pilih kategori masalah dulu.'); return; }
+                if (!selectedKel) { toast('Pilih kelurahan dulu.'); return; }
+                toast('Laporan diterima untuk Kel. ' + selectedKel + '!');
+            }
+
             function flyAndClose(coords) {
-                // Tutup panel
                 panelOpen = false;
                 document.getElementById('panelBody').classList.remove('open');
                 document.getElementById('chevron').classList.remove('open');
 
-                // Zoom ke lokasi
                 mapObj.flyTo(coords, 16, { duration: 1.4 });
             }
         </script>
