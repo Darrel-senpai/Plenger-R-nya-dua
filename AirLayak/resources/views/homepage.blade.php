@@ -357,9 +357,19 @@ function doFilter() {
     toast('Filter berhasil!');
 }
 
-function fly(coords) {
-    mapObj.flyTo(coords, 14, { duration: 1.2 });
+function flyAndClose(coords) {
+    // Tutup panel
+    panelOpen = false;
+    document.getElementById('panelBody').classList.remove('open');
+    document.getElementById('chevron').classList.remove('open');
+
+    // Zoom ke lokasi
+    mapObj.flyTo(coords, 16, { duration: 1.4 });
 }
+
+// function fly(coords) {
+//     mapObj.flyTo(coords, 14, { duration: 1.2 });
+// }
 
     </script>
     </body>

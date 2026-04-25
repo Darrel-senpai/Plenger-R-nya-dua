@@ -6,6 +6,87 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(mapObj);
 
 // 2. Data Status Tahap Kelurahan
+var kelurahanCoords = {
+    // === 🔴 CLUSTER ALERT (15 KELURAHAN KRITIS) ===
+    'Ampel':              [-7.228, 112.742],
+    'Sidotopo':           [-7.221, 112.755],
+    'Putat Jaya':         [-7.278, 112.722],
+    'Gading':             [-7.215, 112.768],
+    'Embong Kaliasin':    [-7.264, 112.748],
+    'Morokrembangan':     [-7.208, 112.718],
+    'Wonokromo':          [-7.298, 112.735],
+    'Nyamplungan':        [-7.202, 112.732],
+    'Tembok Dukuh':       [-7.235, 112.755],
+    'Kapasari':           [-7.238, 112.750],
+    'Sawahan':            [-7.280, 112.722],
+    'Bongkaran':          [-7.205, 112.728],
+    'Bubutan':            [-7.240, 112.730],
+    'Tegalsari':          [-7.265, 112.742],
+    'Genteng':            [-7.252, 112.752],
+
+    // === 🟡 WASPADA (60 KELURAHAN GANGGUAN RINGAN) ===
+    'Siwalankerto':       [-7.335, 112.758],
+    'Menur Pumpungan':    [-7.268, 112.775],
+    'Keputih':            [-7.295, 112.800],
+    'Klampis Ngasem':     [-7.268, 112.778],
+    'Wonorejo':           [-7.318, 112.800],
+    'Medokan Ayu':        [-7.305, 112.795],
+    'Ketabang':           [-7.258, 112.748],
+    'Sukolilo':           [-7.285, 112.800],
+    'Gubeng':             [-7.255, 112.762],
+    'Baratajaya':         [-7.262, 112.768],
+    'Airlangga':          [-7.258, 112.755],
+    'Mulyorejo':          [-7.255, 112.782],
+    'Tandes':             [-7.248, 112.698],
+    'Suko Manunggal':     [-7.258, 112.718],
+    'Rungkut Kidul':      [-7.318, 112.795],
+    'Kalirungkut':        [-7.308, 112.790],
+    'Kedung Baruk':       [-7.312, 112.782],
+    'Penjaringan Sari':   [-7.298, 112.790],
+    'Gunung Anyar':       [-7.328, 112.795],
+    'Jambangan':          [-7.312, 112.758],
+    'Karah':              [-7.318, 112.748],
+    'Kebonsari':          [-7.322, 112.752],
+    'Gayungan':           [-7.308, 112.748],
+    'Menanggal':          [-7.318, 112.752],
+    'Dukuh Pakis':        [-7.282, 112.718],
+    'Pradah Kalikendal':  [-7.298, 112.718],
+    'Gunung Sari':        [-7.298, 112.722],
+    'Lontar':             [-7.262, 112.695],
+    'Sambikerep':         [-7.272, 112.688],
+    'Made':               [-7.278, 112.692],
+    'Lakarsantri':        [-7.318, 112.702],
+    'Jeruk':              [-7.308, 112.698],
+    'Benowo':             [-7.252, 112.678],
+    'Sememi':             [-7.242, 112.688],
+    'Kandangan':          [-7.235, 112.688],
+    'Tambak Osowilangun': [-7.218, 112.688],
+    'Romokalisari':       [-7.212, 112.682],
+    'Banjarsugihan':      [-7.238, 112.698],
+    'Manukan Kulon':      [-7.248, 112.688],
+    'Manukan Wetan':      [-7.248, 112.698],
+    'Balongsari':         [-7.252, 112.705],
+    'Kupang Krajan':      [-7.268, 112.722],
+    'Petemon':            [-7.272, 112.728],
+    'Banyu Urip':         [-7.275, 112.718],
+    'Putat Gede':         [-7.272, 112.712],
+    'Sonokwijenan':       [-7.265, 112.712],
+    'Simomulyo':          [-7.262, 112.708],
+    'Kenjeran':           [-7.218, 112.768],
+    'Bulak':              [-7.202, 112.768],
+    'Kedung Cowek':       [-7.208, 112.772],
+    'Tanah Kali Kedinding':[-7.212, 112.762],
+    'Sidotopo Wetan':     [-7.225, 112.758],
+    'Bulak Banteng':      [-7.215, 112.762],
+    'Tambak Wedi':        [-7.202, 112.778],
+    'Ujung':              [-7.198, 112.738],
+    'Perak Utara':        [-7.198, 112.732],
+    'Perak Timur':        [-7.205, 112.735],
+    'Krembangan Utara':   [-7.205, 112.722],
+    'Krembangan Selatan': [-7.212, 112.725],
+    'Kemayoran':          [-7.215, 112.732],
+};
+
 var reportData = {
     // === 🔴 CLUSTER ALERT (15 KELURAHAN KRITIS) ===
     'Ampel': { n: 25, d: 'KRITIS: Air berbau bangkai pekat di sekitar pemukiman' },
@@ -85,7 +166,6 @@ var reportData = {
     'Krembangan Utara': { n: 1, d: 'Laporan air berbau' },
     'Krembangan Selatan': { n: 2, d: 'Warna coklat muda' },
     'Kemayoran': { n: 1, d: 'Tekanan air rendah' },
-    'Bongkaran': { n: 3, d: 'Laporan air payau' }
 };
 
 var styleConfig = {
@@ -265,8 +345,15 @@ sortedEntries.forEach(function(entry) {
         color = '#EF4444'; textColor = '#DC2626';
     }
 
+    // Ambil koordinat, fallback ke tengah Surabaya
+    var coords = kelurahanCoords[name] || [-7.257, 112.752];
+
     var div = document.createElement('div');
     div.className = 'bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 flex items-center gap-2.5 cursor-pointer hover:border-blue hover:bg-blue-light transition-all';
+
+    // Tambahkan onclick di sini
+    div.onclick = function() { flyAndClose(coords); };
+
     div.innerHTML =
         '<div class="w-2 h-2 rounded-full flex-shrink-0" style="background:' + color + '"></div>' +
         '<div class="flex-1">' +
@@ -274,5 +361,6 @@ sortedEntries.forEach(function(entry) {
             '<div class="text-[10px] text-gray-500 mt-0.5">' + info.d + '</div>' +
         '</div>' +
         '<div class="text-[17px] font-extrabold font-mono" style="color:' + textColor + '">' + info.n + '</div>';
+        
     areaListEl.appendChild(div);
 });
