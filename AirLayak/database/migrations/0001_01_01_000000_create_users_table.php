@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,7 +16,7 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('password')->nullable();
             $table->string('google_id')->nullable()->unique();
-            $table->enum('auth_type', ['google', 'guest'])->default('guest');
+            $table->enum('auth_type', ['google', 'guest', 'instansi'])->default('guest');
             $table->string('phone')->nullable()->unique();
             $table->string('region_id')->nullable();
             $table->float('default_lat')->nullable();
@@ -35,7 +34,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->string('user_id', 36)->nullable()->index();   // ← UUID compatible
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
