@@ -46,9 +46,10 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/auth/guest', [GuestAuthController::class, 'login'])
     ->name('auth.guest');
 
-Route::get('/auth/google', function () {
-    return redirect()->route('login')->with('error', 'Google login coming soon.');
-})->name('auth.google');
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])
+    ->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+    ->name('auth.google.callback');
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
@@ -62,22 +63,40 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        
-        // Auto-redirect instansi ke admin panel
-        if ($user->isInstansi()) {
+        if ($user && $user->isInstansi()) {
             return redirect()->route('admin.dashboard');
         }
-        
-        // Warga / guest dashboard
-        return view('dashboard');
+        return redirect()->route('homepage');
     })->name('dashboard');
     
-    // Optional: route untuk lihat homepage setelah login (jika butuh)
-    Route::get('/homepage', function () {
-        return view('homepage');
-    })->name('homepage');
-    Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
+    // Rute Laporan Warga
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [App\Http\Controllers\ReportController::class, 'index'])->name('index'); // Tracking laporan
+        Route::post('/', [App\Http\Controllers\ReportController::class, 'store'])->name('store'); // Submit dari form
+        Route::patch('/{report}/cancel', [App\Http\Controllers\ReportController::class, 'cancel'])->name('cancel'); // Batalkan
+        Route::patch('/{report}/resolve', [App\Http\Controllers\ReportController::class, 'resolve'])->name('resolve'); // Selesaikan
+        Route::post('/extensions/{extension}/respond', [App\Http\Controllers\ReportController::class, 'respondExtension'])->name('extension.respond'); // Setujui/Tolak Extend
+    });
 });
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/dashboard', function () {
+//         $user = auth()->user();
+        
+//         // Auto-redirect instansi ke admin panel
+//         if ($user->isInstansi()) {
+//             return redirect()->route('admin.dashboard');
+//         }
+        
+//         // Warga / guest dashboard
+//         return view('dashboard');
+//     })->name('dashboard');
+    
+//     // Optional: route untuk lihat homepage setelah login (jika butuh)
+//     Route::get('/homepage', function () {
+//         return view('homepage');
+//     })->name('homepage');
+//     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
+// });
 
 Route::get('/homepage', [HomepageController::class, 'homepage'])->name('homepage');
 Route::get('/lapor', [FormReportController::class, 'create'])->name('reports.create');

@@ -173,4 +173,119 @@ class ReportController extends Controller
         
         return back()->with('success', 'Permintaan perpanjangan dikirim ke pelapor.');
     }
+
+    // Menerima submit dari formlaporan.blade.php
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => 'required|in:' . implode(',', Report::CATEGORIES),
+            'water_sources' => 'required|array',
+            'description' => 'required|string',
+            'location_lat' => 'required|numeric',
+            'location_lng' => 'required|numeric',
+            'photo' => 'nullable|image|max:2048',
+        ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('reports', 'public');
+        }
+
+        $report = new Report([
+            'category' => $validated['category'],
+            'water_sources' => $validated['water_sources'],
+            'description' => $validated['description'],
+            'photo_path' => $photoPath,
+            'status' => 'pending',
+            'priority' => 'normal',
+            'reporter_session_id' => session()->getId(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+        
+        // Simpan titik kordinat menggunakan trait HasSpatialAttributes
+        $report->setPoint('location', $validated['location_lat'], $validated['location_lng']);
+        $report->save();
+
+        return redirect()->route('laporan.index')->with('success', 'Laporan berhasil dikirim dan tersinkronisasi ke Instansi.');
+    }
+
+    // Warga membatalkan laporannya sendiri
+    public function cancel(Report $report)
+    {
+        if ($report->reporter_session_id !== session()->getId()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        if ($report->status === 'pending') {
+            $report->update([
+                'status' => 'dismissed',
+                'dismissal_reason' => 'Dibatalkan oleh pelapor',
+                'dismissed_at' => now()
+            ]);
+            return back()->with('success', 'Laporan berhasil dibatalkan.');
+        }
+
+        return back()->with('error', 'Laporan yang sudah diproses instansi tidak dapat dibatalkan.');
+    }
+
+    public function resolve(Report $report)
+    {
+        if ($report->reporter_session_id !== session()->getId()) {
+            abort(403);
+        }
+
+        if (in_array($report->status, ['awaiting_confirmation', 'in_progress'])) {
+            $report->update([
+                'status' => 'resolved',
+                'resolved_at' => now(),
+                'completion_notes' => 'Diselesaikan dan dikonfirmasi oleh warga.'
+            ]);
+            return back()->with('success', 'Terima kasih, laporan telah ditandai selesai.');
+        }
+
+        return back()->with('error', 'Laporan tidak dapat diselesaikan pada status saat ini.');
+    }
+
+    // Warga merespons permintaan perpanjangan waktu (extend) dari Instansi
+    public function respondExtension(Request $request, ReportExtension $extension)
+    {
+        $report = $extension->report;
+        
+        if ($report->reporter_session_id !== session()->getId()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'action' => 'required|in:approve,reject',
+            'notes' => 'nullable|string'
+        ]);
+
+        if ($extension->status !== 'pending' || $extension->isExpired()) {
+            return back()->with('error', 'Permintaan perpanjangan ini sudah diproses atau kadaluarsa.');
+        }
+
+        if ($validated['action'] === 'approve') {
+            $extension->update([
+                'status' => 'approved',
+                'responded_at' => now(),
+                'user_response_notes' => $validated['notes']
+            ]);
+            $report->update([
+                'status' => 'in_progress',
+                'eta_at' => $extension->proposed_eta_at // Waktu ETA diperbarui ke waktu yang diajukan instansi
+            ]);
+            return back()->with('success', 'Anda telah menyetujui perpanjangan waktu penanganan.');
+        } else {
+            $extension->update([
+                'status' => 'rejected',
+                'responded_at' => now(),
+                'user_response_notes' => $validated['notes']
+            ]);
+            $report->update([
+                'status' => 'in_progress' // Status kembali in_progress, waktu tidak ditambah
+            ]);
+            return back()->with('success', 'Anda menolak perpanjangan waktu. Instansi akan diberitahu.');
+        }
+    }
 }

@@ -295,7 +295,7 @@
                                   placeholder="Mis: Tim teknisi dispatch ke lokasi untuk inspeksi pipa..."></textarea>
                     </div>
                     
-                    <button type="submit" class="w-full bg-yellow-600 text-white px-4 py-2.5 rounded text-sm font-medium hover:bg-yellow-700 transition">
+                    <button type="submit" class="w-full bg-green-600 text-black px-4 py-2.5 rounded text-sm font-medium hover:bg-yellow-700 transition">
                         🔧 Mulai Penanganan
                     </button>
                 </form>
@@ -433,7 +433,7 @@
                         
                         <button type="submit" 
                                 onclick="return confirm('Yakin ingin menolak laporan ini? Aksi ini tidak dapat dibatalkan.')"
-                                class="w-full bg-red-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-red-700 transition">
+                                class="w-full bg-red-600 text-black px-4 py-2 rounded text-sm font-medium hover:bg-red-700 transition">
                             Tolak Laporan
                         </button>
                     </form>

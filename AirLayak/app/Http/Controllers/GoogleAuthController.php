@@ -11,11 +11,12 @@ class GoogleAuthController extends Controller
 {
     public function redirect()
     {
-        // composer require laravel/socialite
-        // Redirect to Google's OAuth 2.0 server
-
+        // Jika sudah login, arahkan sesuai rolenya
         if (Auth::check()) {
-            return redirect()->route('homepage');
+            if (Auth::user()->isInstansi()) {
+                return redirect()->route('admin.dashboard');
+            }
+            return redirect()->route('dashboard'); // Atau 'homepage'
         }
 
         return Socialite::driver('google')->redirect();
@@ -27,7 +28,7 @@ class GoogleAuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
             // Handle error (e.g., log it, show an error message, etc.)
-            return redirect('/')->with('error', 'Authentication failed. Please try again.');
+            return redirect('/login')->with('error', 'Autentikasi gagal. Silakan coba lagi.');
         }
 
         $user = User::where('google_id', $googleUser->getId())
@@ -35,17 +36,33 @@ class GoogleAuthController extends Controller
             ->first();
 
         if (!$user) {
+            // Buat user baru dengan default role 'warga'
             $user = User::create([
                 'google_id' => $googleUser->getId(),
-                'name' => $googleUser->getName(),
-                'email' => $googleUser->getEmail(),
+                'name'      => $googleUser->getName(),
+                'email'     => $googleUser->getEmail(),
                 'auth_type' => 'google',
+                'role'      => 'warga', // PASTIKAN ADA DEFAULT ROLE
             ]);
+        } else {
+            // Jika user sudah ada (misal sebelumnya daftar manual via email) 
+            // tapi baru pertama kali klik Google Login, update google_id-nya
+            if (!$user->google_id) {
+                $user->update([
+                    'google_id' => $googleUser->getId(),
+                    'auth_type' => 'google'
+                ]);
+            }
         }
 
         Auth::login($user, true);
 
-        return redirect()->route('homepage');
+        // PENGECEKAN REDIRECT SESUAI ROLE
+        if ($user->isInstansi()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('dashboard'); // Arahkan warga ke dashboard warga
     }
 
     public function logout()
