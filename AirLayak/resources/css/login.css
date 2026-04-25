@@ -1,0 +1,36 @@
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-google {
+    background: var(--surface);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-style: solid;
+    border-width: 1px;
+    border-color: #bcbcbc;
+    box-shadow: var(--shadow-lg);
+}
+.btn-google:hover {
+    border-color: #c8c4bc;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
