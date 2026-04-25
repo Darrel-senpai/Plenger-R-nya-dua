@@ -15,7 +15,7 @@ class GoogleAuthController extends Controller
         // Redirect to Google's OAuth 2.0 server
 
         if (Auth::check()) {
-            return redirect()->route('welcome');
+            return redirect()->route('dashboard');
         }
 
         return Socialite::driver('google')->redirect();
@@ -45,7 +45,7 @@ class GoogleAuthController extends Controller
 
         Auth::login($user, true);
 
-        return redirect()->route('welcome');
+        return redirect()->route('dashboard');
     }
 
     public function logout()

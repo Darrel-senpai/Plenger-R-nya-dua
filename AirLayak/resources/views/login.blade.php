@@ -68,7 +68,7 @@
                 Masuk untuk melanjutkan
             </p>
 
-            <form method="POST" action="{{ route('welcome') }}">
+            <form method="POST" action="{{ route('dashboard') }}">
                 @csrf
 
                 <!-- Role -->
@@ -141,10 +141,13 @@
                 <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            {{-- <a href="{{ route('guest') }}" --}} <a href="{{ route('auth.guest') }}"
-                class="block text-center w-full h-11 leading-11 border rounded-xl hover:bg-gray-50">
-                Masuk sebagai tamu
-            </a>
+            <form action="{{ route('auth.guest') }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="block text-center w-full h-11 border rounded-xl hover:bg-gray-50">
+                    Masuk sebagai tamu
+                </button>
+            </form>
 
         </div>
     </div>
