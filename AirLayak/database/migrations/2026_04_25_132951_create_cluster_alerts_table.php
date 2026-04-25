@@ -46,7 +46,7 @@ return new class extends Migration
             // UUID untuk FK ke users
             $table->uuid('assigned_to_user_id')->nullable();
             
-            $table->timestamp('triggered_at');
+            $table->timestamp('triggered_at')->nullable();
             $table->timestamp('resolved_at')->nullable();
             $table->text('resolution_notes')->nullable();
             
@@ -54,7 +54,6 @@ return new class extends Migration
             
             $table->index(['status', 'severity_score']);
             $table->index(['area_id', 'status']);
-            $table->index('triggered_at');
             $table->index('assigned_to_user_id');
             
             // FK

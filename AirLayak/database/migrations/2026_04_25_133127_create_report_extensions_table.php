@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('requested_by_user_id');   // UUID
             
             $table->timestamp('previous_eta_at');
-            $table->timestamp('proposed_eta_at');
+            $table->timestamp('proposed_eta_at')->nullable();
             $table->text('reason');
             
             $table->enum('status', [
@@ -26,7 +26,7 @@ return new class extends Migration
             
             $table->timestamp('responded_at')->nullable();
             $table->text('user_response_notes')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             
             $table->timestamps();
             
