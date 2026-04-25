@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\GuestAuthController;
+use App\Http\Controllers\HomepageController;
 use Illuminate\Support\Facades\Route;
-use Pest\Support\View;
+// use Pest\Support\View;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -16,9 +17,11 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->
 // Guest
 Route::get('/auth/guest',           [GuestAuthController::class, 'login'])->name('auth.guest');
 
-Route::get('/login', fn() => View('login'))->name('login');
+Route::get('/login', fn() => view('login'))->name('login');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => view('welcome'))->name('welcome');
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
+
+Route::get('/homepage', [HomepageController::class, 'homepage']);
