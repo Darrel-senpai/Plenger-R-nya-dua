@@ -84,11 +84,11 @@
 <body class="bg-slate-200 font-sans text-gray-900">
 
     <!-- NAV -->
-    <nav class="fixed top-0 left-0 right-0 z-[1000] bg-white/97 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-5 h-[54px]">
+    <nav class="fixed top-0 left-0 right-0 z-[1000] bg-white backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-5 h-[54px]">
     <!-- Logo -->
     <div class="flex items-center gap-2">
-        <div class="w-[30px] h-[30px] rounded-lg bg-gradient-to-br from-blue to-teal flex items-center justify-center text-xs text-white font-extrabold font-mono">AL</div>
-        <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Layak</span></span>
+        <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-[30px] w-auto">
+        <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Warga</span></span>
     </div>
 
     <!-- Center badges -->
@@ -154,8 +154,8 @@
 
         <!-- Tabs -->
         <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
-            <button class="tab active flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('lapor',this)">📋 Laporkan Masalah</button>
-            <button class="tab flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('area',this)">🗺 Cek Area Saya</button>
+            <button class="tab active flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('lapor',this)">Filter</button>
+            <button class="tab flex-1 text-center py-1.5 text-xs font-semibold rounded-lg border-none cursor-pointer font-sans text-gray-500 transition-all" onclick="switchTab('area',this)">Cek Area Saya</button>
         </div>
 
         <!-- REPORT FORM -->
@@ -188,7 +188,7 @@
                 <option>Mulyorejo</option>
                 <option>Rungkut</option>
             </select>
-            <button class="px-5 py-2 bg-blue text-white rounded-lg font-sans text-xs font-bold whitespace-nowrap hover:bg-blue-dark transition-colors" onclick="doSubmit()">Kirim Anonim →</button>
+            <button class="px-5 py-2 bg-blue text-white rounded-lg font-sans text-xs font-bold whitespace-nowrap hover:bg-blue-dark transition-colors" onclick="doFilter()">Search</button>
             </div>
         </div>
 
@@ -349,11 +349,12 @@ function toast(msg) {
     setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-function doSubmit() {
+function doFilter() {
+    // U can do filter logic here
     var kel = document.getElementById('kel').value;
     if (!selCatEl) { toast('Pilih kategori masalah dulu.'); return; }
     if (!kel) { toast('Pilih kelurahan Anda.'); return; }
-    toast('Laporan diterima! Jika ada 2 laporan lain di area kamu, kami akan mengeluarkan peringatan.');
+    toast('Filter berhasil!');
 }
 
 function fly(coords) {
