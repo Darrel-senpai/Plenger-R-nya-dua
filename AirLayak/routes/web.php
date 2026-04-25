@@ -43,12 +43,11 @@ Route::post('/login', [AuthController::class, 'login'])
     ->middleware('guest')
     ->name('login.submit');
 
-Route::post('/auth/guest', [GuestAuthController::class, 'login'])
+Route::get('/auth/guest', [GuestAuthController::class, 'login'])
     ->name('auth.guest');
 
-Route::get('/auth/google', function () {
-    return redirect()->route('login')->with('error', 'Google login coming soon.');
-})->name('auth.google');
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
@@ -61,7 +60,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 */
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        $user = auth()->user();
+        $user = Auth::user();
         
         // Auto-redirect instansi ke admin panel
         if ($user->isInstansi()) {
