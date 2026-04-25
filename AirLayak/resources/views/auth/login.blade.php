@@ -18,11 +18,9 @@
 
         <!-- Logo -->
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-teal-400 rounded-lg flex items-center justify-center">
-                💧
-            </div>
+            <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-8 w-auto object-contain flex-shrink-0">
             <div class="font-display text-xl font-extrabold">
-                Air<span class="text-teal-200">Layak</span>
+                Air<span class="text-teal-200">Warga</span>
             </div>
         </div>
 

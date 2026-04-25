@@ -39,12 +39,11 @@
 <body class="bg-slate-200 font-sans text-gray-900">
 
     <!-- NAV -->
-
     <nav class="fixed top-0 left-0 right-0 z-[1000] bg-white backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-5 h-[54px]">
         <!-- Logo -->
         <div class="flex items-center gap-2">
             <img src="{{ asset('logo.jpeg') }}" alt="AirWarga Logo" class="h-8 w-auto object-contain flex-shrink-0">
-            <span class="font-extrabold text-[17px] tracking-tight">Air<span class="text-blue">Warga</span></span>
+            <span class="font-extrabold text-xl tracking-tight">Air<span class="text-teal-200">Warga</span></span>
         </div>
 
         <!-- Center badges -->
@@ -52,7 +51,9 @@
             <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-blink-fast"></div>
             <span class="text-[11px] font-semibold text-gray-500">Live · Surabaya</span>
             <span id="nav-cluster-badge"
-                class="font-mono text-[10px] bg-danger text-white px-2.5 py-0.5 rounded-full animate-blink"></span>
+                class="font-mono text-[10px] text-white px-2.5 py-0.5 rounded-full animate-blink"
+                style="background:#DC2626">
+            </span>
         </div>
 
         <!-- Right buttons -->
@@ -60,9 +61,10 @@
             <button
                 class="border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-gray-50 transition-colors"
                 onclick="togglePanel()">📋 Laporan &amp; Info</button>
-            <a
-                class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors"
-                href="{{ route('form.laporan') }}">+ Lapor Sekarang</a>
+            <a href="{{ route('reports.create') }}"
+                class="bg-blue-600 text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-800 transition-colors">
+                + Lapor Sekarang
+            </a>
         </div>
     </nav>
 
@@ -71,6 +73,14 @@
 
     <div class="float-panel fixed left-1/2 -translate-x-1/2 z-[500] w-[min(680px,calc(100vw-32px))] bg-white/97 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-2xl overflow-hidden" style="top: calc(54px + 14px)">
 
+        <div id="panelHeader" class="flex items-center justify-between px-4 py-3 cursor-pointer select-none border-b border-transparent hover:bg-gray-50/50 transition-colors" onclick="togglePanel()">
+            <div class="flex items-center gap-2.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-danger-DEFAULT flex-shrink-0 animate-blink-slow" style="background:#DC2626"></div>
+                <div>
+                    <div id="panel-headline" class="text-[13px] font-bold">Memuat data...</div>
+                    <div id="panel-subline" class="text-[11px] text-gray-500 mt-0.5">Menganalisis laporan wilayah Surabaya</div>
+                </div>
+            </div>
         <div id="panelHeader" class="flex items-center justify-between px-4 py-3 cursor-pointer select-none border-b border-transparent hover:bg-gray-50/50 transition-colors" onclick="togglePanel()">
             <div class="flex items-center gap-2.5">
                 <div class="w-2.5 h-2.5 rounded-full bg-danger-DEFAULT flex-shrink-0 animate-blink-slow" style="background:#DC2626"></div>
@@ -100,7 +110,29 @@
                 <span class="chevron text-xs text-gray-500 ml-2" id="chevron">▼</span>
             </div>
         </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-center">
+                        <div id="stat-total" class="text-[15px] font-extrabold font-mono text-danger" style="color:#DC2626">0</div>
+                        <div class="text-[9px] text-gray-500 whitespace-nowrap">Laporan</div>
+                    </div>
+                    <div class="w-px h-7 bg-gray-200"></div>
+                    <div class="text-center">
+                        <div id="stat-cluster" class="text-[15px] font-extrabold font-mono" style="color:#D97706">0</div>
+                        <div class="text-[9px] text-gray-500">Cluster</div>
+                    </div>
+                    <div class="w-px h-7 bg-gray-200"></div>
+                    <div class="text-center">
+                        <div id="stat-kel" class="text-[15px] font-extrabold font-mono" style="color:#0D8C6E">0</div>
+                        <div class="text-[9px] text-gray-500">Kelurahan</div>
+                    </div>
+                </div>
+                <span class="chevron text-xs text-gray-500 ml-2" id="chevron">▼</span>
+            </div>
+        </div>
 
+        <div class="panel-body" id="panelBody">
+            <div class="p-4 flex flex-col gap-4">
         <div class="panel-body" id="panelBody">
             <div class="p-4 flex flex-col gap-4">
 
@@ -110,7 +142,21 @@
                         Memproses laporan darurat wilayah...
                     </p>
                 </div>
+                <div id="alert-container" class="bg-red-50 border border-red-500 rounded-xl p-3 flex gap-2.5 items-start" style="border-color:#DC2626; background:#FEE2E2">
+                    <span class="text-base flex-shrink-0 mt-0.5">🚨</span>
+                    <p id="alert-text" class="text-xs leading-relaxed" style="color:#7F1D1D">
+                        Memproses laporan darurat wilayah...
+                    </p>
+                </div>
 
+                <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
+                    <button class="tab active flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all" onclick="switchTab('lapor',this)">
+                        📋 Laporkan / Filter
+                    </button>
+                    <button class="tab flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all" onclick="switchTab('area',this)">
+                        🗺 Cek Area Saya
+                    </button>
+                </div>
                 <div class="flex gap-1 bg-gray-100 rounded-xl p-1">
                     <button class="tab active flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all" onclick="switchTab('lapor',this)">
                         📋 Laporkan / Filter
@@ -140,29 +186,31 @@
                         </button>
                     </div>
                     
-                    <div class="flex gap-2">
-                        <select id="kel" class="flex-1 px-3 py-2.5 border-[1.5px] border-gray-200 rounded-xl font-sans text-xs text-gray-900 bg-white focus:border-blue focus:ring-2 focus:ring-blue/20 transition-all outline-none">
-                            <option value="">Pilih Kelurahan Anda...</option>
-                            <option>Ampel</option>
-                            <option>Sidotopo</option>
-                            <option>Putat Jaya</option>
-                            <option>Gading</option>
-                        </select>
-                        <button class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-all shadow-md shadow-blue/20" onclick="doSubmit()">
-                            Kirim →
-                        </button>
+                    <div id="kel-list" class="area-scroll flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1 mb-3">
+                        {{-- diisi otomatis oleh JS --}}
                     </div>
+
+                    <button class="w-full px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-all shadow-md shadow-blue/20" onclick="doSubmit()">
+                        Kirim →
+                    </button>
                 </div>
 
+                <div class="subpanel hidden" id="sub-area">
+                    <div id="area-list" class="area-scroll flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                        {{-- otomatis di isi menggunakan js --}}
                 <div class="subpanel hidden" id="sub-area">
                     <div id="area-list" class="area-scroll flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
                         {{-- otomatis di isi menggunakan js --}}
                     </div>
                 </div>
             {{-- flex col --}}
+            {{-- flex col --}}
             </div>
         {{-- panel body --}}
+        {{-- panel body --}}
         </div>
+    {{-- float-panel --}}
+    </div>
     {{-- float-panel --}}
     </div>
 
@@ -204,16 +252,14 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script>
-        var mapObj, selCatEl = null, panelOpen = false;
+        <script>
+            var mapObj, selCatEl = null, panelOpen = false;
 
-        var mapObj, selCatEl = null, panelOpen = false;
-
-    function togglePanel() {
-        panelOpen = !panelOpen;
-        document.getElementById('panelBody').classList.toggle('open', panelOpen);
-        document.getElementById('chevron').classList.toggle('open', panelOpen);
-    }
+            function togglePanel() {
+                panelOpen = !panelOpen;
+                document.getElementById('panelBody').classList.toggle('open', panelOpen);
+                document.getElementById('chevron').classList.toggle('open', panelOpen);
+            }
 
     function openLapor() {
         if (!panelOpen) togglePanel();

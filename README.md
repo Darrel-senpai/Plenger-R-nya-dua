@@ -12,18 +12,17 @@ Current feature:
 - login Guest
 - homepage (in progress)
   - heatmap
-  - 
-
-Future feature
-- AI
+- Form Pengajuan Laporan
 - Login Admin
 - Middleware authentication
 - Database
 - UI Admin
-- Form Pengajuan Laporan
+- Email + notification
+
+Future feature:
 - Penindakan Laporan
 
 Framework: Laravel 
 bahasa pemrograman: html + css + js + php
 database: MySQL
-tools: console.cloud.google.com (buat login google) + leaflet.js (map) 
+tools: console.cloud.google.com (buat login google) + leaflet.js (map) + Mailtrap (email)

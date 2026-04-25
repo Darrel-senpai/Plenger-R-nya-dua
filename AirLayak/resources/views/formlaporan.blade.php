@@ -117,30 +117,8 @@
 
             <!-- Header -->
             <div class="w-full max-w-xl mb-6 slide-up">
-                <!-- Progress steps -->
-                <div class="flex items-center gap-2 mb-5">
-                    <div class="flex items-center gap-1.5">
-                        <div class="step-dot w-6 h-6 rounded-full bg-blue text-white text-[10px] font-bold font-mono flex items-center justify-center" id="dot1">1</div>
-                        <span class="text-[11px] font-semibold text-blue hidden sm:block">Jenis Masalah</span>
-                    </div>
-                    <div class="flex-1 h-0.5 bg-gray-200 rounded-full mx-1">
-                        <div class="step-line h-full bg-blue rounded-full" id="line1" style="width:0%"></div>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="step-dot w-6 h-6 rounded-full bg-gray-200 text-gray-400 text-[10px] font-bold font-mono flex items-center justify-center" id="dot2">2</div>
-                        <span class="text-[11px] font-semibold text-gray-400 hidden sm:block" id="label2">Detail & Lokasi</span>
-                    </div>
-                    <div class="flex-1 h-0.5 bg-gray-200 rounded-full mx-1">
-                        <div class="step-line h-full bg-blue rounded-full" id="line2" style="width:0%"></div>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="step-dot w-6 h-6 rounded-full bg-gray-200 text-gray-400 text-[10px] font-bold font-mono flex items-center justify-center" id="dot3">3</div>
-                        <span class="text-[11px] font-semibold text-gray-400 hidden sm:block" id="label3">Kirim</span>
-                    </div>
-                </div>
-
                 <h1 class="text-[22px] font-extrabold leading-tight mb-1">Laporkan Masalah Air</h1>
-                <p class="text-[13px] text-gray-500">Laporan kamu bersifat anonim dan membantu warga sekitar.</p>
+                <p class="text-[13px] text-gray-500">Laporan dari kamu akan membantu warga sekitar.</p>
             </div>
 
             <!-- FORM CARD -->
@@ -340,7 +318,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="w-5 h-5 rounded-full bg-blue text-white text-[10px] font-bold font-mono flex items-center justify-center flex-shrink-0">5</span>
                                 <h2 class="text-[13px] font-bold">Tambahkan foto</h2>
-                                <span class="ml-auto text-[10px] text-gray-400 font-medium">Opsional · memperkuat laporan</span>
+                                <span class="ml-auto text-[10px] text-danger font-semibold">* Wajib</span>
                             </div>
                         </div>
                         <div class="p-4">
@@ -359,15 +337,6 @@
                         </div>
                     </div>
 
-                    <!-- ── PRIVACY BADGE ── -->
-                    <div class="privacy-badge border border-green-200 rounded-xl p-3.5 mb-4 flex items-start gap-3 slide-up-delay-5">
-                        <span class="text-lg flex-shrink-0">🔒</span>
-                        <div>
-                            <p class="text-[12px] font-bold text-green-800 mb-0.5">Laporan Sepenuhnya Anonim</p>
-                            <p class="text-[11px] text-green-700 leading-relaxed">Kami tidak menyimpan nama, nomor HP, atau data pribadi apapun. Hanya kategori masalah dan lokasi kelurahan yang dicatat.</p>
-                        </div>
-                    </div>
-
                     <!-- ── SUBMIT BUTTON ── -->
                     <div class="slide-up-delay-6">
                         <button type="submit" id="submitBtn"
@@ -377,7 +346,7 @@
                         </button>
                         <p class="text-center text-[11px] text-gray-400 mt-3">
                             Dengan mengirim, kamu menyetujui
-                            <a href="#" class="text-blue underline">syarat penggunaan</a> AirWarga.
+                            <a href="{{ route('homepage') }}" class="text-blue underline">syarat penggunaan</a> AirWarga.
                         </p>
                     </div>
 
