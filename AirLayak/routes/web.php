@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/{report}/cancel', [App\Http\Controllers\ReportController::class, 'cancel'])->name('cancel'); // Batalkan
         Route::patch('/{report}/resolve', [App\Http\Controllers\ReportController::class, 'resolve'])->name('resolve'); // Selesaikan
         Route::post('/extensions/{extension}/respond', [App\Http\Controllers\ReportController::class, 'respondExtension'])->name('extension.respond'); // Setujui/Tolak Extend
+        Route::get('/{report}', [App\Http\Controllers\ReportController::class, 'show'])->name('show');
     });
 });
 // Route::middleware(['auth'])->group(function () {

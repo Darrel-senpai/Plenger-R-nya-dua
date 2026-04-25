@@ -16,6 +16,7 @@ class Report extends Model
 
     protected $fillable = [
         'area_id',
+        'user_id',
         'category',
         'water_sources',
         'description',
@@ -103,6 +104,12 @@ class Report extends Model
     public function area(): BelongsTo
     {
         return $this->belongsTo(Area::class);
+    }
+
+    // Tambahkan relasi ini di bagian === RELATIONS ===
+    public function reporter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function handler(): BelongsTo
@@ -202,6 +209,7 @@ class Report extends Model
 
     public function scopeActive($query)
     {
-        return $query->whereNotIn('status', ['resolved', 'dismissed']);
+        // Pastikan status yang ada di seeder masuk dalam kategori active
+        return $query->whereIn('status', ['pending', 'acknowledged', 'in_progress', 'extension_requested']);
     }
 }

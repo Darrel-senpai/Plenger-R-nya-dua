@@ -78,6 +78,20 @@ class ReportController extends Controller
         ]);
     }
 
+    public function show(Report $report)
+    {
+        // Pastikan hanya pemilik laporan yang bisa melihat detailnya
+        // Cek berdasarkan user_id (jika login) ATAU session_id (jika guest)
+        $isOwner = (auth()->check() && $report->user_id === auth()->id()) || 
+                   ($report->reporter_session_id === session()->getId());
+
+        if (!$isOwner) {
+            abort(403, 'Anda tidak memiliki akses ke laporan ini.');
+        }
+
+        return view('warga.reports.show', compact('report'));
+    }
+
     private function checkClusterAlert($kelurahanId, $category)
     {
         $count = Report::where('kelurahan_id', $kelurahanId)

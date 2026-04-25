@@ -20,12 +20,18 @@ class DashboardController extends Controller
         // Build base queries dengan scoping per role
         $reportsQuery = Report::query();
         $clustersQuery = ClusterAlert::query();
-        
+
         if (!$user->isAdmin() && $user->city) {
-            $reportsQuery->whereHas('area', fn($q) => $q->where('city', $user->city));
-            $clustersQuery->whereHas('area', fn($q) => $q->where('city', $user->city));
+            $reportsQuery->whereHas('area', fn($q) => $q->where('city', 'like', '%' . $user->city . '%'));
+            $clustersQuery->whereHas('area', fn($q) => $q->where('city', 'like', '%' . $user->city . '%'));
         }
-        
+
+        $urgentReports = (clone $reportsQuery)
+            ->with('area')
+            ->orderByDesc('priority_score')
+            ->limit(20)
+            ->get();
+
         if ($user->isPdam()) {
             $reportsQuery->forRole('pdam');
         } elseif ($user->isDinkes()) {
@@ -60,8 +66,9 @@ class DashboardController extends Controller
         // Cluster centroids untuk peta
         $clusterMarkers = $activeClusters->map(function ($cluster) {
             $centroid = $cluster->getPoint('centroid');
-            if (!$centroid) return null;
-            
+            if (!$centroid)
+                return null;
+
             return [
                 'id' => $cluster->id,
                 'lat' => $centroid['lat'],
@@ -109,35 +116,36 @@ class DashboardController extends Controller
             'mapCenter'
         ));
     }
-    
+
     /**
      * Aggregate count laporan aktif per kelurahan dengan koordinat centroid.
      */
     private function getAreasWithReportCount($user): array
     {
         $areasQuery = Area::query();
-        
+
         if (!$user->isAdmin() && $user->city) {
             $areasQuery->where('city', $user->city);
         }
-        
+
         $areas = $areasQuery->get();
-        
+
         return $areas->map(function ($area) use ($user) {
             $reportQuery = Report::where('area_id', $area->id)
                 ->whereNotIn('status', ['resolved', 'dismissed']);
-            
+
             if ($user->isPdam()) {
                 $reportQuery->forRole('pdam');
             } elseif ($user->isDinkes()) {
                 $reportQuery->forRole('dinkes');
             }
-            
+
             $count = $reportQuery->count();
             $centroid = $area->getPoint('centroid');
-            
-            if (!$centroid) return null;
-            
+
+            if (!$centroid)
+                return null;
+
             return [
                 'id' => $area->id,
                 'kelurahan' => $area->kelurahan,

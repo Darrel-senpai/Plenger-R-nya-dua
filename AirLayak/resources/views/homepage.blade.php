@@ -76,7 +76,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button class="border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-gray-50 transition-colors" onclick="togglePanel()">📋 Laporan &amp; Info</button>
+            <button class="border border-gray-200 text-gray-500 rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-gray-50 transition-colors" onclick="toggleHistory()">📋 Histori Laporan</button>
             <button class="bg-blue text-white rounded-lg px-3.5 py-1.5 text-xs font-bold hover:bg-blue-dark transition-colors" onclick="openLapor()">+ Lapor Sekarang</button>
         </div>
     </nav>
@@ -171,6 +171,51 @@
         </div>
     </div>
 
+    <div id="historyPanel" class="fixed right-0 top-[54px] bottom-0 w-full max-w-[400px] bg-white shadow-2xl z-[1500] transform translate-x-full transition-transform duration-300 overflow-y-auto border-l border-gray-100">
+        <div class="p-5">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
+                <h2 class="text-lg font-bold text-gray-900">Histori Laporan Anda</h2>
+                <button onclick="toggleHistory()" class="text-gray-400 hover:text-gray-900 text-2xl leading-none transition-colors">&times;</button>
+            </div>
+
+            @auth
+                <div class="flex flex-col gap-4">
+                    @forelse(auth()->user()->reports()->latest()->get() as $report)
+                        <div class="border border-gray-100 rounded-xl p-4 hover:border-blue transition-colors bg-white shadow-sm hover:shadow-md">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-mono font-bold text-gray-400">#{{ substr($report->id, 0, 8) }}</span>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase 
+                                    @if($report->status == 'resolved') bg-green-100 text-green-700 
+                                    @elseif($report->status == 'pending') bg-yellow-100 text-yellow-700 
+                                    @else bg-blue-100 text-blue-700 @endif">
+                                    {{ str_replace('_', ' ', $report->status) }}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-sm text-gray-900 capitalize">{{ str_replace('_', ' ', $report->category) }}</h3>
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $report->description }}</p>
+                            <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[10px] text-gray-400">
+                                <span>{{ $report->created_at->diffForHumans() }}</span>
+                                <a href="#" class="text-blue font-bold hover:underline">Lihat Detail &rarr;</a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-16">
+                            <span class="text-4xl block mb-3">📭</span>
+                            <p class="text-gray-500 text-sm font-medium">Belum ada laporan yang Anda buat.</p>
+                            <button onclick="toggleHistory(); openLapor();" class="mt-4 text-blue text-xs font-bold hover:underline">Buat Laporan Baru</button>
+                        </div>
+                    @endforelse
+                </div>
+            @else
+                <div class="text-center py-16 bg-blue-50/50 rounded-2xl border border-dashed border-blue-200">
+                    <span class="text-4xl mb-3 block">🔒</span>
+                    <p class="text-sm text-blue-800 px-4">Silakan login untuk melihat riwayat laporan yang tertaut dengan akun Anda.</p>
+                    <a href="{{ route('login') }}" class="inline-block mt-5 bg-blue text-white px-6 py-2.5 rounded-lg text-xs font-bold shadow hover:bg-blue-dark transition-colors">Login Sekarang</a>
+                </div>
+            @endauth
+        </div>
+    </div>
+
     <div class="toast bg-gray-900 text-white rounded-xl px-4 py-3 text-xs font-semibold flex items-center gap-2 shadow-xl whitespace-nowrap" id="toast">
         ✅ &nbsp;<span id="toast-msg">Laporan diterima!</span>
     </div>
@@ -193,6 +238,15 @@
             panelOpen = !panelOpen;
             document.getElementById('panelBody').classList.toggle('open', panelOpen);
             document.getElementById('chevron').classList.toggle('open', panelOpen);
+        }
+
+        function toggleHistory() {
+            const panel = document.getElementById('historyPanel');
+            if (!panel) {
+                console.error("Elemen 'historyPanel' tidak ditemukan!");
+                return;
+            }
+            panel.classList.toggle('translate-x-full');
         }
 
         function openLapor() {

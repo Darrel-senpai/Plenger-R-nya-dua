@@ -20,15 +20,20 @@ class DemoReportsSeeder extends Seeder
         };
         
         $pdamUser = User::where('email', 'pdam@airlayak.id')->first();
+        
+        // Akun Warga: Handy (Mapped via reporter_session_id)
+        $handyId = 'e78ebffd-a8e3-4da9-be27-48c6475cba62';
 
         // ====================================================================
         // SCENARIO A: PDAM-DOMINANT CLUSTER (Tambaksari)
         // ====================================================================
         $tambaksari = $findArea('Tambaksari');
         $scenarioA = [
-            ['lat' => -7.2542, 'lng' => 112.7639, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Air ledeng bau klorin sangat menyengat sejak pagi', 'hours_ago' => 3],
-            ['lat' => -7.2538, 'lng' => 112.7645, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Bau aneh dari keran, seperti bau kaporit kuat', 'hours_ago' => 5],
-            ['lat' => -7.2548, 'lng' => 112.7634, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Air PDAM bau menyengat, anak saya tidak mau mandi', 'hours_ago' => 7],
+            // First 3 reports assigned to Handy via reporter_session_id
+            ['lat' => -7.2542, 'lng' => 112.7639, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Air ledeng bau klorin sangat menyengat sejak pagi', 'hours_ago' => 3, 'reporter_session_id' => $handyId],
+            ['lat' => -7.2538, 'lng' => 112.7645, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Bau aneh dari keran, seperti bau kaporit kuat', 'hours_ago' => 5, 'reporter_session_id' => $handyId],
+            ['lat' => -7.2548, 'lng' => 112.7634, 'category' => 'bau', 'water_sources' => ['pdam'], 'description' => 'Air PDAM bau menyengat, anak saya tidak mau mandi', 'hours_ago' => 7, 'reporter_session_id' => $handyId],
+            // Regular anonymous reports
             ['lat' => -7.2535, 'lng' => 112.7640, 'category' => 'bau', 'water_sources' => ['pdam', 'sumur'], 'description' => 'PDAM bau aneh, sumur agak ada bau juga', 'hours_ago' => 10],
             ['lat' => -7.2546, 'lng' => 112.7644, 'category' => 'rasa_aneh', 'water_sources' => ['pdam'], 'description' => 'Rasa air galon dimasak dari PDAM ada rasa kimia', 'hours_ago' => 12],
         ];
@@ -158,7 +163,7 @@ class DemoReportsSeeder extends Seeder
         $totalReports = Report::count();
         $this->command->info("Created {$totalReports} demo reports across 6 scenarios + background noise.");
         $this->command->info('Demo scenarios:');
-        $this->command->info('  A. PDAM-dominant: Kel. Tambaksari (5 reports)');
+        $this->command->info('  A. PDAM-dominant: Kel. Tambaksari (5 reports) - First 3 assigned to Handy');
         $this->command->info('  B. Mixed well+PDAM: Kel. Wonokromo (6 reports)');
         $this->command->info('  C. Refill-dominant: Kel. Sawahan (4 reports)');
         $this->command->info('  D. Overdue ack: Kel. Genteng (1 report, priority: high)');
@@ -182,7 +187,8 @@ class DemoReportsSeeder extends Seeder
             'initial_priority_score' => $data['priority_score'] ?? 50,
             'target_role' => in_array($data['category'], ['sakit_perut', 'rasa_aneh']) ? 'both' : 'pdam',
             'warning_count' => $data['warning_count'] ?? 0,
-            'reporter_session_id' => 'demo_seed_' . uniqid(),
+            // Assign custom session ID if provided, otherwise generate one
+            'reporter_session_id' => $data['reporter_session_id'] ?? 'demo_seed_' . uniqid(),
             'reporter_confirm_token' => Str::random(48),
             'ip_address' => '127.0.0.1',
             'created_at' => $createdAt,

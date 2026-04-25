@@ -93,6 +93,13 @@ class User extends Authenticatable
         return in_array($this->role, self::INSTANSI_ROLES, true);
     }
 
+    public function reports()
+    {
+        // Beri tahu Laravel untuk mencocokkan 'id' dari tabel users 
+        // dengan kolom 'reporter_session_id' di tabel reports
+        return $this->hasMany(Report::class, 'reporter_session_id', 'id');
+    }
+
     public function isWarga(): bool
     {
         // Warga biasa: tidak punya role instansi
@@ -112,6 +119,12 @@ class User extends Authenticatable
     public function isDinkes(): bool
     {
         return $this->role === 'dinkes';
+    }
+
+    // Tambahkan relasi ini di bagian === RELATIONS ===
+    public function myReports(): HasMany
+    {
+        return $this->hasMany(Report::class, 'user_id');
     }
 
     public function isAdmin(): bool
