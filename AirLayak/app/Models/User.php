@@ -2,30 +2,25 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, Notifiable, HasApiTokens;
 
-    public $incrementing = false; 
+    // === KEY TYPE: UUID ===
+    public $incrementing = false;
     protected $keyType = 'string';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
+        'password',
         'google_id',
         'auth_type',
         'phone',
@@ -33,28 +28,79 @@ class User extends Authenticatable
         'default_lat',
         'default_lng',
         'profile_completed',
+        'role',
+        'city',
+        'organization',
+        'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'profile_completed' => 'boolean',
+        'is_active' => 'boolean',
+        'default_lat' => 'float',
+        'default_lng' => 'float',
+    ];
+
+    // Auto-generate UUID untuk new records
+    protected static function boot()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
+
+    // === RELATIONS ===
+    
+    public function reportsHandled(): HasMany
+    {
+        return $this->hasMany(Report::class, 'handled_by_user_id');
+    }
+
+    public function reportsAcknowledged(): HasMany
+    {
+        return $this->hasMany(Report::class, 'acknowledged_by_user_id');
+    }
+
+    public function warningsReceived(): HasMany
+    {
+        return $this->hasMany(ReportWarning::class, 'warned_user_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(AppNotification::class, 'target_user_id');
+    }
+
+    // === HELPERS ===
+    
+    public function isPdam(): bool
+    {
+        return $this->role === 'pdam';
+    }
+
+    public function isDinkes(): bool
+    {
+        return $this->role === 'dinkes';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function unreadNotificationsCount(): int
+    {
+        return AppNotification::forUser($this)->unread()->count();
     }
 }
