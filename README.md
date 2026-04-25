@@ -21,6 +21,7 @@ Future feature
 - Database
 - UI Admin
 - Form Pengajuan Laporan
+- Penindakan Laporan
 
 Framework: Laravel 
 bahasa pemrograman: html + css + js + php
