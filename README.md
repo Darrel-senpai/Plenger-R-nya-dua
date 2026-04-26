@@ -18,8 +18,6 @@ Current feature:
 - Database
 - UI Admin
 - Email + notification
-
-Future feature:
 - Penindakan Laporan
 
 Framework: Laravel 
