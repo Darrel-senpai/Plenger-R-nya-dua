@@ -378,28 +378,7 @@
 
         <!-- Kelurahan data per kecamatan -->
         <script>
-        const kelurahanMap = {
-            'Bubutan':          [{ id: 1, name: 'Alun-alun Contong' }, { id: 2, name: 'Bubutan' }, { id: 3, name: 'Gundih' }, { id: 4, name: 'Jepara' }, { id: 5, name: 'Tembok Dukuh' }],
-            'Genteng':          [{ id: 6, name: 'Embong Kaliasin' }, { id: 7, name: 'Genteng' }, { id: 8, name: 'Kapasari' }, { id: 9, name: 'Ketabang' }, { id: 10, name: 'Tegalsari' }],
-            'Kenjeran':         [{ id: 11, name: 'Bulak Banteng' }, { id: 12, name: 'Kedung Cowek' }, { id: 13, name: 'Kenjeran' }, { id: 14, name: 'Tanah Kali Kedinding' }],
-            'Krembangan':       [{ id: 15, name: 'Dupak' }, { id: 16, name: 'Kemayoran' }, { id: 17, name: 'Krembangan Selatan' }, { id: 18, name: 'Morokrembangan' }, { id: 19, name: 'Perak Barat' }],
-            'Mulyorejo':        [{ id: 20, name: 'Dukuh Sutorejo' }, { id: 21, name: 'Kalijudan' }, { id: 22, name: 'Kalisari' }, { id: 23, name: 'Kejawan Putih Tambak' }, { id: 24, name: 'Manyar Sabrangan' }, { id: 25, name: 'Mulyorejo' }],
-            'Pabean Cantian':   [{ id: 26, name: 'Bongkaran' }, { id: 27, name: 'Krembangan Utara' }, { id: 28, name: 'Nyamplungan' }, { id: 29, name: 'Perak Timur' }, { id: 30, name: 'Perak Utara' }],
-            'Rungkut':          [{ id: 31, name: 'Kalirungkut' }, { id: 32, name: 'Kedung Baruk' }, { id: 33, name: 'Medokan Ayu' }, { id: 34, name: 'Penjaringan Sari' }, { id: 35, name: 'Rungkut Kidul' }, { id: 36, name: 'Wonorejo' }],
-            'Sambikerep':       [{ id: 37, name: 'Bringin' }, { id: 38, name: 'Lontar' }, { id: 39, name: 'Made' }, { id: 40, name: 'Sambikerep' }],
-            'Sawahan':          [{ id: 41, name: 'Banyu Urip' }, { id: 42, name: 'Kupang Krajan' }, { id: 43, name: 'Pakis' }, { id: 44, name: 'Petemon' }, { id: 45, name: 'Putat Jaya' }, { id: 46, name: 'Sawahan' }],
-            'Semampir':         [{ id: 47, name: 'Ampel' }, { id: 48, name: 'Pegirian' }, { id: 49, name: 'Sidotopo' }, { id: 50, name: 'Sidotopo Wetan' }, { id: 51, name: 'Ujung' }],
-            'Simokerto':        [{ id: 52, name: 'Kapasan' }, { id: 53, name: 'Sidodadi' }, { id: 54, name: 'Simokerto' }, { id: 55, name: 'Simolawang' }, { id: 56, name: 'Tambakrejo' }],
-            'Sukolilo':         [{ id: 57, name: 'Gebang Putih' }, { id: 58, name: 'Keputih' }, { id: 59, name: 'Klampis Ngasem' }, { id: 60, name: 'Menur Pumpungan' }, { id: 61, name: 'Nginden Jangkungan' }, { id: 62, name: 'Semolowaru' }],
-            'Sukomanunggal':    [{ id: 63, name: 'Putat Gede' }, { id: 64, name: 'Simomulyo' }, { id: 65, name: 'Simomulyo Baru' }, { id: 66, name: 'Sonokwijenan' }, { id: 67, name: 'Sukomanunggal' }, { id: 68, name: 'Tanjungsari' }],
-            'Tambaksari':       [{ id: 69, name: 'Dukuh Setro' }, { id: 70, name: 'Gading' }, { id: 71, name: 'Kapas Madya Baru' }, { id: 72, name: 'Pacar Keling' }, { id: 73, name: 'Pacar Kembang' }, { id: 74, name: 'Ploso' }, { id: 75, name: 'Rangkah' }, { id: 76, name: 'Tambaksari' }],
-            'Tandes':           [{ id: 77, name: 'Balongsari' }, { id: 78, name: 'Banjar Sugihan' }, { id: 79, name: 'Karang Poh' }, { id: 80, name: 'Manukan Kulon' }, { id: 81, name: 'Manukan Wetan' }, { id: 82, name: 'Tandes' }],
-            'Tegalsari':        [{ id: 83, name: 'Kedungdoro' }, { id: 84, name: 'Keputran' }, { id: 85, name: 'Tegalsari' }, { id: 86, name: 'Dr. Soetomo' }],
-            'Tenggilis Mejoyo': [{ id: 87, name: 'Kendangsari' }, { id: 88, name: 'Kutisari' }, { id: 89, name: 'Panjang Jiwo' }, { id: 90, name: 'Tenggilis Mejoyo' }],
-            'Wiyung':           [{ id: 91, name: 'Babatan' }, { id: 92, name: 'Balas Klumprik' }, { id: 93, name: 'Jajar Tunggal' }, { id: 94, name: 'Wiyung' }],
-            'Wonocolo':         [{ id: 95, name: 'Bendul Merisi' }, { id: 96, name: 'Jemur Wonosari' }, { id: 97, name: 'Margorejo' }, { id: 98, name: 'Sidosermo' }, { id: 99, name: 'Siwalankerto' }],
-            'Wonokromo':        [{ id: 100, name: 'Darmo' }, { id: 101, name: 'Jagir' }, { id: 102, name: 'Ngagel' }, { id: 103, name: 'Ngagelrejo' }, { id: 104, name: 'Sawunggaling' }, { id: 105, name: 'Wonokromo' }],
-        };
+        const kelurahanMap = @json($kelurahanMap);
 
         // ── CATEGORY SELECT ──
         var selectedCategory = null;
@@ -417,16 +396,30 @@
         }
 
         // ── KELURAHAN LOADER ──
-        function loadKelurahan(kecamatan) {
-            var sel = document.getElementById('kelSelect');
+        function loadSemuaKelurahan() {
+            // Pastikan ID ini sama persis dengan yang ada di HTML: <select id="kel">
+            var sel = document.getElementById('kelSelect'); 
+            if (!sel) return; // Mencegah error jika elemen tidak ditemukan
+
             sel.innerHTML = '<option value="">Pilih Kelurahan...</option>';
-            if (!kecamatan || !kelurahanMap[kecamatan]) return;
-            kelurahanMap[kecamatan].forEach(function(k) {
-                var opt = document.createElement('option');
-                opt.value = k.id;
-                opt.textContent = k.name;
-                sel.appendChild(opt);
-            });
+
+            // Looping setiap kecamatan di dalam kelurahanMap
+            for (const kecamatan in kelurahanMap) {
+                // Buat grup dropdown (agar rapi per kecamatan)
+                var optgroup = document.createElement('optgroup');
+                optgroup.label = "Kecamatan " + kecamatan;
+
+                // Looping kelurahan di dalam kecamatan tersebut
+                kelurahanMap[kecamatan].forEach(function(k) {
+                    var opt = document.createElement('option');
+                    opt.value = k.id;
+                    opt.textContent = k.name;
+                    optgroup.appendChild(opt);
+                });
+
+                // Masukkan grup ke dalam select
+                sel.appendChild(optgroup);
+            }
         }
 
         // ── CHAR COUNT ──
@@ -480,6 +473,8 @@
             btn.disabled = true;
             document.getElementById('submitLabel').textContent = 'Mengirim...';
         });
+
+        loadSemuaKelurahan();
         </script>
     </body>
 </html>

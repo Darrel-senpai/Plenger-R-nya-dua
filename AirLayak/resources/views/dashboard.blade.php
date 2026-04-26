@@ -1,534 +1,347 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LaporIn — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@extends('admin.layouts.app')
 
-    :root {
-      --bg: #f7f6f3;
-      --surface: #ffffff;
-      --border: #e8e5df;
-      --text: #1a1a18;
-      --muted: #8a8880;
-      --accent: #2d6a4f;
-      --accent-light: #e9f2ee;
-      --accent-hover: #245a41;
-      --high: #c0392b;
-      --high-bg: #fdf0ef;
-      --medium: #d4750a;
-      --medium-bg: #fef6e7;
-      --low: #2d6a4f;
-      --low-bg: #e9f2ee;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.07);
-      --shadow-md: 0 4px 16px rgba(0,0,0,.08);
-      --nav-w: 240px;
+@section('title', 'Dashboard')
+
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+    #cluster-map {
+        height: 500px;
+        border-radius: 0.5rem;
+        z-index: 0;
     }
-
-    html, body { height: 100%; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--nav-w);
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 16px;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
+    .leaflet-popup-content-wrapper {
+        border-radius: 0.5rem !important;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 8px 24px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 20px;
+    .leaflet-popup-content {
+        margin: 0.75rem 1rem !important;
+        font-family: inherit;
     }
-    .brand-icon { font-size: 22px; }
-    .brand-name { font-family: 'Instrument Serif', serif; font-size: 20px; letter-spacing: -.3px; }
-
-    .nav-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 0 10px;
-      margin-bottom: 6px;
+    .priority-list {
+        max-height: 500px;
+        overflow-y: auto;
     }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 10px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .15s;
-      text-decoration: none;
-      margin-bottom: 2px;
+    .priority-list::-webkit-scrollbar {
+        width: 4px;
     }
-    .nav-item:hover { background: var(--bg); color: var(--text); }
-    .nav-item.active { background: var(--accent-light); color: var(--accent); }
-    .nav-icon { font-size: 17px; width: 22px; text-align: center; }
-
-    .sidebar-bottom { margin-top: auto; }
-    .user-chip {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      background: var(--bg);
+    .priority-list::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 2px;
     }
-    .avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: #fff; font-weight: 600;
-    }
-    .user-info { flex: 1; min-width: 0; }
-    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-type { font-size: 11px; color: var(--muted); }
+</style>
+@endpush
 
-    /* ── MAIN ── */
-    .main {
-      margin-left: var(--nav-w);
-      flex: 1;
-      min-height: 100vh;
-      padding: 32px 36px;
-      max-width: calc(100vw - var(--nav-w));
-    }
+@section('content')
+<div class="mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+    <p class="text-sm text-gray-500 mt-1">
+        Selamat datang, {{ auth()->user()->name }}
+    </p>
+</div>
 
-    /* ── TOPBAR ── */
-    .topbar {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      gap: 16px;
-    }
-
-    .topbar-left h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 28px;
-      letter-spacing: -.4px;
-      margin-bottom: 4px;
-    }
-    .topbar-left p { font-size: 14px; color: var(--muted); }
-
-    .topbar-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
-
-    .region-select {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn-report {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 18px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .2s;
-      text-decoration: none;
-      box-shadow: 0 2px 8px rgba(45,106,79,.3);
-    }
-    .btn-report:hover { background: var(--accent-hover); transform: translateY(-1px); }
-
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .stat-card-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
-    .stat-card-value { font-family: 'Instrument Serif', serif; font-size: 30px; letter-spacing: -.5px; }
-    .stat-card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-    .trend-up { color: var(--high); }
-    .trend-ok { color: var(--accent); }
-
-    /* ── FILTERS ── */
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .filter-chip {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .filter-chip:hover { border-color: #c0bdb5; color: var(--text); }
-    .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .filter-chip.high { border-color: var(--high); color: var(--high); }
-    .filter-chip.high.active { background: var(--high); color: #fff; }
-    .filter-chip.medium { border-color: var(--medium); color: var(--medium); }
-    .filter-chip.medium.active { background: var(--medium); color: #fff; }
-
-    /* ── REPORT LIST ── */
-    .reports-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .report-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      transition: all .2s;
-      cursor: pointer;
-      animation: fadeUp .4s ease both;
-    }
-    .report-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .report-card:nth-child(1) { animation-delay: .05s; }
-    .report-card:nth-child(2) { animation-delay: .10s; }
-    .report-card:nth-child(3) { animation-delay: .15s; }
-    .report-card:nth-child(4) { animation-delay: .20s; }
-
-    .report-thumb {
-      width: 64px; height: 64px;
-      border-radius: 10px;
-      background: var(--bg);
-      flex-shrink: 0;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-    }
-
-    .report-body { flex: 1; min-width: 0; }
-    .report-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
-
-    .severity-badge {
-      font-size: 11px; font-weight: 600;
-      padding: 2px 8px; border-radius: 6px;
-      text-transform: uppercase; letter-spacing: .04em;
-    }
-    .sev-high { background: var(--high-bg); color: var(--high); }
-    .sev-medium { background: var(--medium-bg); color: var(--medium); }
-    .sev-low { background: var(--low-bg); color: var(--low); }
-
-    .status-badge {
-      font-size: 11px; font-weight: 500;
-      padding: 2px 8px; border-radius: 6px;
-      background: var(--bg); color: var(--muted);
-    }
-
-    .report-time { font-size: 12px; color: var(--muted); margin-left: auto; white-space: nowrap; }
-
-    .report-title {
-      font-weight: 600; font-size: 15px;
-      margin-bottom: 4px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .report-desc {
-      font-size: 13px; color: var(--muted); line-height: 1.5;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    }
-
-    .report-footer {
-      display: flex; align-items: center; gap: 14px; margin-top: 10px;
-    }
-
-    .report-loc { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-
-    .upvote-btn {
-      display: flex; align-items: center; gap: 5px;
-      font-size: 13px; color: var(--muted);
-      background: var(--bg); border: 1px solid var(--border);
-      padding: 4px 10px; border-radius: 8px;
-      cursor: pointer; transition: all .15s;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .upvote-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
-    .upvote-btn.voted { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
-
-    .escalation-banner {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: var(--high-bg);
-      border: 1px solid #f5c6c3;
-      border-radius: 8px;
-      font-size: 12px;
-      color: var(--high);
-      font-weight: 500;
-    }
-
-    /* ── NOTIFICATION TOAST ── */
-    .notif-toast {
-      position: fixed; top: 20px; right: 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--high);
-      border-radius: 12px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow-md);
-      max-width: 320px;
-      z-index: 999;
-      animation: slideIn .4s ease;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .notif-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-    .notif-body { font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .notif-action { font-size: 12px; color: var(--accent); font-weight: 500; margin-top: 8px; cursor: pointer; }
-
-    .duplicate-tag {
-      font-size: 11px; color: var(--muted);
-      background: var(--bg); padding: 2px 8px; border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-  </style>
-</head>
-<body>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-icon">📍</span>
-      <span class="brand-name">LaporIn</span>
+{{-- Stats Cards --}}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Pending</p>
+        <p class="text-2xl font-semibold mt-1">{{ $stats['pending'] }}</p>
     </div>
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Sedang Ditangani</p>
+        <p class="text-2xl font-semibold mt-1">{{ $stats['in_progress'] }}</p>
+    </div>
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Menunggu Konfirmasi</p>
+        <p class="text-2xl font-semibold mt-1">{{ $stats['awaiting_confirmation'] }}</p>
+    </div>
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Selesai Hari Ini</p>
+        <p class="text-2xl font-semibold mt-1 text-green-600">{{ $stats['resolved_today'] }}</p>
+    </div>
+</div>
 
-    <p class="nav-label">Menu</p>
-    <a href="#" class="nav-item active"><span class="nav-icon">🏠</span> Dashboard</a>
-    <a href="#" class="nav-item"><span class="nav-icon">📋</span> Laporan Saya</a>
-    <a href="#" class="nav-item"><span class="nav-icon">🗺</span> Peta</a>
-    <a href="#" class="nav-item"><span class="nav-icon">🔔</span> Notifikasi <span style="margin-left:auto;background:var(--high);color:#fff;font-size:11px;padding:1px 7px;border-radius:10px;">2</span></a>
+{{-- Warning Cards --}}
+@if($stats['overdue_acknowledgment'] > 0 || $stats['overdue_resolution'] > 0)
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    @if($stats['overdue_acknowledgment'] > 0)
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p class="text-sm font-medium text-red-800">⚠️ Belum Di-acknowledge (>12 jam)</p>
+        <p class="text-2xl font-semibold text-red-900 mt-1">{{ $stats['overdue_acknowledgment'] }} laporan</p>
+    </div>
+    @endif
+    @if($stats['overdue_resolution'] > 0)
+    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+        <p class="text-sm font-medium text-orange-800">⚠️ Melewati ETA</p>
+        <p class="text-2xl font-semibold text-orange-900 mt-1">{{ $stats['overdue_resolution'] }} laporan</p>
+    </div>
+    @endif
+</div>
+@endif
 
-    <p class="nav-label" style="margin-top:20px;">Pengaturan</p>
-    <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
-    <a href="#" class="nav-item"><span class="nav-icon">🚪</span> Keluar</a>
-
-    <div class="sidebar-bottom">
-      <div class="user-chip">
-        <div class="avatar">B</div>
-        <div class="user-info">
-          <div class="user-name">Budi Santoso</div>
-          <div class="user-type">Google Account</div>
+{{-- Map + Priority Reports Side by Side --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    {{-- Heatmap Map (2/3 width) --}}
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-2">
+                <div>
+                    <h2 class="font-semibold text-gray-900">Heatmap Kelurahan</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        Klik kelurahan untuk lihat semua laporan di area tersebut
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-3 h-3 rounded-full" style="background: #9ca3af; opacity: 0.5;"></div>
+                        <span class="text-gray-600">Tidak ada laporan</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-3 h-3 rounded-full" style="background: #fbbf24; opacity: 0.7;"></div>
+                        <span class="text-gray-600">1-2 laporan</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-3 h-3 rounded-full" style="background: #ef4444; opacity: 0.7;"></div>
+                        <span class="text-gray-600">3+ laporan</span>
+                    </div>
+                </div>
+            </div>
+            <div id="cluster-map"></div>
         </div>
-      </div>
     </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="topbar-left">
-        <h1>Dashboard Laporan</h1>
-        <p>Hari ini, Jumat 25 April 2025 · Surabaya, Jawa Timur</p>
-      </div>
-      <div class="topbar-right">
-        <select class="region-select">
-          <option>📍 Surabaya Selatan</option>
-          <option>📍 Surabaya Utara</option>
-          <option>📍 Surabaya Timur</option>
-          <option>📍 Surabaya Barat</option>
-          <option>📍 Semua Wilayah</option>
-        </select>
-        <a href="/report" class="btn-report">+ Buat Laporan</a>
-      </div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-card-label">Total Hari Ini</div>
-        <div class="stat-card-value">24</div>
-        <div class="stat-card-sub trend-up">↑ 6 dari kemarin</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">Belum Ditindak</div>
-        <div class="stat-card-value" style="color:var(--high)">8</div>
-        <div class="stat-card-sub">3 mendekati eskalasi</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">Sedang Diproses</div>
-        <div class="stat-card-value" style="color:var(--medium)">11</div>
-        <div class="stat-card-sub">Rata-rata 1.5 hari</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-label">Selesai</div>
-        <div class="stat-card-value trend-ok">5</div>
-        <div class="stat-card-sub trend-ok">↑ 87% success rate</div>
-      </div>
-    </div>
-
-    <!-- FILTER BAR -->
-    <div class="filter-bar">
-      <button class="filter-chip active" onclick="setFilter(this)">Semua</button>
-      <button class="filter-chip high" onclick="setFilter(this)">🔴 Tinggi</button>
-      <button class="filter-chip medium" onclick="setFilter(this)">🟡 Sedang</button>
-      <button class="filter-chip" onclick="setFilter(this)">🟢 Rendah</button>
-      <button class="filter-chip" onclick="setFilter(this)">Belum Ditindak</button>
-      <button class="filter-chip" onclick="setFilter(this)">Diproses</button>
-      <button class="filter-chip" onclick="setFilter(this)">Selesai</button>
-    </div>
-
-    <!-- REPORT CARDS -->
-    <div class="reports-grid">
-
-      <!-- Card 1: High severity, escalated -->
-      <div class="report-card">
-        <div class="report-thumb">🚗</div>
-        <div class="report-body">
-          <div class="report-meta">
-            <span class="severity-badge sev-high">Tinggi</span>
-            <span class="status-badge">Belum Ditindak</span>
-            <span class="duplicate-tag">+3 laporan serupa</span>
-            <span class="report-time">2 jam lalu</span>
-          </div>
-          <div class="report-title">Kecelakaan di Jl. Raya Darmo — kendaraan masih di jalan</div>
-          <div class="report-desc">Terjadi tabrakan antara motor dan angkot di depan Taman Bungkul. Tidak ada korban jiwa, namun jalanan terblokir sebagian dan membahayakan pengguna jalan lain.</div>
-          <div class="report-footer">
-            <span class="report-loc">📍 Jl. Raya Darmo, Surabaya Selatan</span>
-            <button class="upvote-btn voted">👍 47 Saya juga alami</button>
-          </div>
-          <div class="escalation-banner">
-            ⏰ Laporan ini telah <strong>2 hari</strong> belum ditindak — segera hubungi <strong>Dishub Surabaya: (031) 548-1111</strong>
-          </div>
+    
+    {{-- Priority Reports (1/3 width) --}}
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg border border-gray-200 h-full flex flex-col">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                    <h2 class="font-semibold text-gray-900">Laporan Prioritas</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Diurutkan dari paling urgent</p>
+                </div>
+                <a href="{{ route('admin.reports.index') }}" class="text-xs text-teal-600 hover:underline">
+                    Semua →
+                </a>
+            </div>
+            
+            <div class="priority-list flex-1 overflow-y-auto p-2">
+                @forelse($priorityReports as $report)
+                    <a href="{{ route('admin.reports.show', $report) }}"
+                       class="block p-3 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-100 mb-1 transition group">
+                        <div class="flex items-start gap-2">
+                            <div class="w-1 self-stretch rounded-full
+                                @if($report->priority === 'critical') bg-red-500
+                                @elseif($report->priority === 'high') bg-orange-500
+                                @elseif($report->priority === 'normal') bg-blue-500
+                                @else bg-gray-300 @endif">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <p class="font-medium text-sm truncate">
+                                        {{ $report->area->kelurahan ?? '-' }}
+                                    </p>
+                                    <span class="text-xs font-mono text-gray-400 flex-shrink-0">
+                                        {{ number_format($report->priority_score, 0) }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-600 mb-1 capitalize">
+                                    {{ str_replace('_', ' ', $report->category) }} · 
+                                    @foreach($report->water_sources as $source)
+                                        <span>{{ str_replace('_', ' ', $source) }}@if(!$loop->last), @endif</span>
+                                    @endforeach
+                                </p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-500">{{ $report->statusLabel() }}</span>
+                                    <span class="text-gray-400">{{ $report->created_at->diffForHumans() }}</span>
+                                </div>
+                                @if($report->isOverdueAcknowledgment())
+                                    <span class="inline-block mt-1 px-1.5 py-0.5 text-xs bg-red-100 text-red-700 rounded">
+                                        ⚠️ Overdue ack
+                                    </span>
+                                @endif
+                                @if($report->isOverdueResolution())
+                                    <span class="inline-block mt-1 px-1.5 py-0.5 text-xs bg-orange-100 text-orange-700 rounded">
+                                        ⚠️ Overdue ETA
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="text-center py-8 text-sm text-gray-500">
+                        Tidak ada laporan aktif.
+                    </div>
+                @endforelse
+            </div>
         </div>
-      </div>
-
-      <!-- Card 2: Medium severity -->
-      <div class="report-card">
-        <div class="report-thumb">🚦</div>
-        <div class="report-body">
-          <div class="report-meta">
-            <span class="severity-badge sev-medium">Sedang</span>
-            <span class="status-badge">Diproses</span>
-            <span class="report-time">5 jam lalu</span>
-          </div>
-          <div class="report-title">Kemacetan parah di Jl. Ahmad Yani arah Wonokromo</div>
-          <div class="report-desc">Macet panjang dari bundaran Dolog hingga Joyoboyo sejak pagi. Penyebab diduga perbaikan trotoar di sisi kiri jalan yang memakan satu lajur.</div>
-          <div class="report-footer">
-            <span class="report-loc">📍 Jl. Ahmad Yani, Surabaya Selatan</span>
-            <button class="upvote-btn" onclick="this.classList.toggle('voted'); this.textContent = this.classList.contains('voted') ? '👍 32 Saya juga alami' : '👍 31 Saya juga alami'">👍 31 Saya juga alami</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3: High severity -->
-      <div class="report-card">
-        <div class="report-thumb">🚧</div>
-        <div class="report-body">
-          <div class="report-meta">
-            <span class="severity-badge sev-high">Tinggi</span>
-            <span class="status-badge">Belum Ditindak</span>
-            <span class="report-time">1 hari lalu</span>
-          </div>
-          <div class="report-title">Jalan berlubang besar di Jl. Gubeng Pojok — berbahaya malam hari</div>
-          <div class="report-desc">Lubang sedalam sekitar 20cm di tengah jalan tanpa rambu peringatan. Sudah ada 2 motor yang jatuh menurut warga sekitar.</div>
-          <div class="report-footer">
-            <span class="report-loc">📍 Jl. Gubeng Pojok, Surabaya Timur</span>
-            <button class="upvote-btn">👍 19 Saya juga alami</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 4: Low severity -->
-      <div class="report-card">
-        <div class="report-thumb">💡</div>
-        <div class="report-body">
-          <div class="report-meta">
-            <span class="severity-badge sev-low">Rendah</span>
-            <span class="status-badge">Selesai ✓</span>
-            <span class="report-time">2 hari lalu</span>
-          </div>
-          <div class="report-title">Lampu PJU mati di Jl. Ngagel Rejo Kidul</div>
-          <div class="report-desc">3 lampu jalan mati berturut-turut sejak seminggu lalu, mengakibatkan jalan gelap di malam hari.</div>
-          <div class="report-footer">
-            <span class="report-loc">📍 Jl. Ngagel Rejo, Surabaya Timur</span>
-            <button class="upvote-btn">👍 8 Saya juga alami</button>
-          </div>
-        </div>
-      </div>
-
     </div>
+</div>
 
-    @auth
-    <a href="{{ route('auth.logout') }}" class="mt-4 px-4 py-2 bg-black text-white inline-block">
-            Logout
-        </a>   
-    @endauth
-  </main>
+{{-- Active Cluster List --}}
+@if($activeClusters->count() > 0)
+<div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-gray-900">Cluster Aktif</h2>
+        <a href="{{ route('admin.clusters.index') }}" class="text-xs text-teal-600 hover:underline">
+            Lihat Semua →
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        @foreach($activeClusters->take(6) as $cluster)
+            <a href="{{ route('admin.clusters.show', $cluster) }}" 
+               class="block p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-medium">{{ $cluster->area->kelurahan ?? '-' }}</p>
+                    <span class="px-2 py-1 text-xs rounded font-medium
+                        @if($cluster->severity_score >= 70) bg-red-100 text-red-700
+                        @elseif($cluster->severity_score >= 40) bg-orange-100 text-orange-700
+                        @else bg-yellow-100 text-yellow-700 @endif">
+                        {{ number_format($cluster->severity_score, 0) }}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500">
+                    {{ $cluster->report_count }} laporan · {{ ucfirst($cluster->dominant_category) }}
+                </p>
+                <p class="text-xs text-gray-400 mt-1 capitalize">
+                    {{ str_replace('_', ' ', $cluster->source_pattern) }}
+                </p>
+            </a>
+        @endforeach
+    </div>
+</div>
+@endif
+@endsection
 
-  <!-- NOTIFICATION TOAST -->
-  {{-- <div class="notif-toast">
-    <div class="notif-title">⏰ Laporan Belum Ditindak</div>
-    <div class="notif-body">Laporan "Kecelakaan di Jl. Raya Darmo" sudah 2 hari belum ada tindakan.</div>
-    <div class="notif-action">📞 Hubungi Dishub Surabaya →</div>
-  </div> --}}
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// Data dari backend
+const areasWithCount = @json($areasWithCount);
+const clusterMarkers = @json($clusterMarkers);
+const mapCenter = @json($mapCenter);
 
-  <script>
-    function setFilter(el) {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-    }
-  </script>
+// Initialize map
+const map = L.map('cluster-map', {
+    center: [mapCenter.lat, mapCenter.lng],
+    zoom: 12,
+    zoomControl: true,
+});
 
-</body>
-</html>
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+}).addTo(map);
+
+// Helper: tentukan warna berdasarkan jumlah laporan
+function getHeatColor(count) {
+    if (count >= 3) return '#ef4444';      // Merah - cluster threshold
+    if (count >= 1) return '#fbbf24';      // Kuning - waspada
+    return '#9ca3af';                      // Abu-abu - normal
+}
+
+function getHeatOpacity(count) {
+    if (count >= 3) return 0.55;
+    if (count >= 1) return 0.4;
+    return 0.15;
+}
+
+function getHeatRadius(count) {
+    // Radius lingkaran heatmap dalam meters
+    // Lebih banyak laporan = lingkaran lebih besar
+    if (count >= 5) return 1200;
+    if (count >= 3) return 900;
+    if (count >= 1) return 700;
+    return 500;
+}
+
+// Render heatmap untuk setiap kelurahan
+areasWithCount.forEach(area => {
+    const color = getHeatColor(area.count);
+    const opacity = getHeatOpacity(area.count);
+    const radius = getHeatRadius(area.count);
+    
+    const circle = L.circle([area.lat, area.lng], {
+        radius: radius,
+        fillColor: color,
+        fillOpacity: opacity,
+        color: color,
+        weight: area.count > 0 ? 2 : 1,
+        opacity: area.count > 0 ? 0.8 : 0.3,
+    }).addTo(map);
+    
+    const statusLabel = area.count >= 3 ? '🔴 Cluster Alert (3+ laporan)' 
+                      : area.count >= 1 ? '🟡 Waspada' 
+                      : '⚪ Normal';
+    
+    const popupHtml = `
+        <div style="min-width: 220px; padding: 4px;">
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px;">
+                Kel. ${area.kelurahan}
+            </div>
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 10px;">
+                Kec. ${area.kecamatan}
+            </div>
+            <div style="border-top: 1px solid #f0f0f0; padding-top: 8px;">
+                <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;">
+                    <span style="color: #6b7280;">Status</span>
+                    <span style="font-weight: 700; color: ${color};">${statusLabel}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;">
+                    <span style="color: #6b7280;">Laporan aktif</span>
+                    <span style="font-weight: 700; color: ${color};">${area.count} laporan</span>
+                </div>
+            </div>
+            ${area.count > 0 ? `
+                <a href="${area.reports_url}" 
+                   style="display: block; margin-top: 10px; padding: 8px; background: #0d9488; color: white; text-align: center; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                    Lihat ${area.count} Laporan & Tindak Lanjuti →
+                </a>
+            ` : `
+                <div style="margin-top: 10px; padding: 8px; background: #f9fafb; color: #6b7280; text-align: center; border-radius: 6px; font-size: 11px;">
+                    Tidak ada laporan aktif
+                </div>
+            `}
+        </div>
+    `;
+    
+    circle.bindPopup(popupHtml, { maxWidth: 280 });
+});
+
+// Cluster overlay (lingkaran cluster yang ter-detect)
+clusterMarkers.forEach(cluster => {
+    const severityColor = cluster.severity >= 70 ? '#dc2626' 
+                        : cluster.severity >= 40 ? '#ea580c' 
+                        : '#eab308';
+    
+    L.circle([cluster.lat, cluster.lng], {
+        radius: cluster.radius || 500,
+        fillColor: 'transparent',
+        fillOpacity: 0,
+        color: severityColor,
+        weight: 3,
+        dashArray: '8, 8',
+    }).addTo(map).bindPopup(`
+        <div style="min-width: 220px; padding: 4px;">
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: ${severityColor};">
+                ⚠️ Cluster Alert
+            </div>
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 8px;">
+                Kel. ${cluster.kelurahan}
+            </div>
+            <div style="font-size: 12px; line-height: 1.6;">
+                <div><strong>${cluster.count}</strong> laporan ${cluster.category}</div>
+                <div>Severity: <strong>${cluster.severity.toFixed(0)}/100</strong></div>
+            </div>
+            <a href="${cluster.detail_url}" 
+               style="display: block; margin-top: 8px; padding: 6px 10px; background: #0d9488; color: white; text-align: center; border-radius: 4px; font-size: 12px; font-weight: 600; text-decoration: none;">
+                Lihat Detail Cluster →
+            </a>
+        </div>
+    `);
+});
+
+// Auto-fit bounds
+if (areasWithCount.length > 0) {
+    const bounds = L.latLngBounds(areasWithCount.map(a => [a.lat, a.lng]));
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+}
+</script>
+@endpush
