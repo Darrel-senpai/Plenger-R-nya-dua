@@ -25,7 +25,7 @@
         </div>
 
         <!-- Content -->
-        <div>
+        <div class="hidden sm:inline">
             <p class="text-xs tracking-widest uppercase text-teal-200 mb-4">
                 Sistem Pemantauan Air
             </p>

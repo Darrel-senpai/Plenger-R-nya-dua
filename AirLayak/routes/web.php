@@ -94,13 +94,12 @@ Route::middleware(['auth'])->group(function () {
         });
 
         return view('formlaporan', compact('kelurahanMap'));
-    })->name('form.laporan');
+    })->name('reports.create');
 
     Route::get('/logout', [GoogleAuthController::class, 'logout'])->name('auth.logout');
 });
 
 Route::get('/homepage', [HomepageController::class, 'homepage'])->name('homepage');
-Route::get('/lapor', [FormReportController::class, 'create'])->name('reports.create');
 Route::post('/lapor', [FormReportController::class, 'store'])->name('reports.store');
 
 Route::get('/email', [warnPDAM::class, 'warnTechnician'])->name('email');

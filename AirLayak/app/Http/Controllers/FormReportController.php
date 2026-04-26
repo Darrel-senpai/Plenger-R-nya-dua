@@ -20,5 +20,7 @@ class FormReportController extends Controller
             'description'  => 'nullable|string|max:500',
             'photo_path'   => 'nullable|image|max:5120',
         ]);
+
+        return redirect()->route('homepage');
     }
 }
